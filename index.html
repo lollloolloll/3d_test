@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#03040a">
+<meta name="description" content="Market Organism — live and recorded market data drawn as a multi-handle manifold. Sectors are handles, assets are cells, correlations are flows.">
+<title>Market Organism</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2338e8ff'/%3E%3Cstop offset='.5' stop-color='%23b46cff'/%3E%3Cstop offset='1' stop-color='%23ff9a3c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='16' cy='16' rx='13' ry='8' fill='none' stroke='url(%23g)' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@1,400;1,500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="booting">
+<canvas id="gl" tabindex="0" aria-label="Market manifold 3D view. Drag to orbit, scroll to zoom."></canvas>
+<div id="vign"></div>
+<svg id="leaders" aria-hidden="true"></svg>
+<div id="labels" aria-hidden="true"><div id="corelab" class="corelab"></div><div id="axis"></div></div>
+
+<!-- boot -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-mark"><span></span><span></span><span></span></div>
+  <div class="ld-title">Market Organism</div>
+  <div class="ld-step" id="ldStep">Loading</div>
+  <div class="ld-bar"><i id="ldBar"></i></div>
+</div>
+
+<!-- top bar -->
+<header id="top">
+  <div class="brand">
+    <div class="wordmark">MARKET&nbsp;ORGANISM</div>
+    <div class="tagline" id="tagline">Markets as one living manifold</div>
+  </div>
+  <nav id="tabs" class="seg" aria-label="Market"></nav>
+  <div id="status">
+    <div class="status-row">
+      <span id="stale" class="chip warn" hidden></span>
+      <span id="badge" class="badge"><span class="pulse"></span><span id="badgeText">Connecting</span></span>
+      <button id="helpBtn" class="btn icon" aria-label="Keyboard shortcuts" title="Shortcuts (?)">?</button>
+    </div>
+    <div id="clock" class="clock">—</div>
+    <div id="source" class="source"></div>
+  </div>
+</header>
+<div id="simbanner" hidden><span>SIMULATED · NOT REAL DATA</span></div>
+<div id="bigtime" hidden><div class="t" id="btT">—</div><div class="r" id="btR">Replay</div><div class="n" id="btN"></div></div>
+
+<!-- panels -->
+<section id="pManifold" class="panel tl" data-sheet="manifold" aria-label="Manifold">
+  <h3>Manifold <span id="mhint">live values</span></h3>
+  <dl id="mstats" class="kv"></dl>
+  <div class="hist-wrap"><div class="hist-cap"><span>Δ distribution · entities</span><span id="histRange"></span></div><div id="hist"></div></div>
+</section>
+
+<section id="pSources" class="panel tr" data-sheet="sources" aria-label="Data sources">
+  <h3>Data sources <span id="srcsum"></span></h3>
+  <div id="srcs"></div>
+  <details class="more"><summary>Engine status</summary><div id="stlines"></div><p id="note" class="note"></p></details>
+</section>
+
+<section id="pSectors" class="panel bl" data-sheet="sectors" aria-label="Sectors">
+  <h3>Sectors <span id="vhint">handles</span></h3>
+  <div id="vrows" role="list"></div>
+</section>
+
+<section id="pLayers" class="panel br" data-sheet="layers" aria-label="Layers and encoding">
+  <h3>Layers <span>encoding</span></h3>
+  <div id="layers">
+    <label class="layer" data-k="manifold"><i class="ico ico-man"></i><span class="ln"><b>Manifold</b><small>hole size = sector energy · lift = sector Δ · glow = burst</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="cells"><i class="ico ico-cell"></i><span class="ln"><b>Cells</b><small id="lgSize">size = energy · colour = Δ · flare = burst</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="arcs"><i class="ico ico-flow"></i><span class="ln"><b>Flows</b><small id="lgEdge">correlation ρ · cyan + / amber −</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="core"><i class="ico ico-core"></i><span class="ln"><b>Core</b><small>market Δ · glow = market burst · σ axis</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="streams"><i class="ico ico-stream"></i><span class="ln"><b>Streams</b><small>decorative · speed = market burst</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="stars"><i class="ico ico-space"></i><span class="ln"><b>Space</b><small>decorative backdrop</small></span><input type="checkbox" class="sw" checked></label>
+  </div>
+  <div class="scale-wrap"><div id="scale"></div><div class="scalelab"><span id="smin"></span><span>0</span><span id="smax"></span></div></div>
+  <div class="ctrls">
+    <div class="seg sm" role="group" aria-label="Delta"><button id="bRef">Δ ref</button><button id="bWin">Δ window</button></div>
+    <div class="seg sm" role="group" aria-label="Colour convention"><button id="bKR" title="Korean convention: up = red">▲ red</button><button id="bUS" title="US convention: up = green">▲ green</button></div>
+    <div class="row-btns"><button class="btn" id="bSpin" title="R">Auto-orbit</button><button class="btn" id="bFit" title="F">Fit view</button></div>
+  </div>
+</section>
+
+<div id="eq" class="panel eqp" aria-label="Model">
+  <div id="eqMain" class="math"></div>
+  <div id="eqs" class="eqs"></div>
+</div>
+
+<div id="timeline" class="panel" aria-label="Timeline">
+  <div class="ctl">
+    <button class="btn live on" id="tLive" title="Back to live (L)"><span class="dot"></span><span id="tLiveTxt">Live</span></button>
+    <button class="btn icon" id="tPlay" title="Replay stored history (Space)" aria-label="Play"><svg viewBox="0 0 16 16"><path id="tPlayIco" d="M5 3.5v9l7-4.5z"/></svg></button>
+    <div class="seg sm" role="group" aria-label="Replay speed"><button class="sp" data-sp="86400">1d/s</button><button class="sp" data-sp="3600">1h/s</button><button class="sp" data-sp="60">1m/s</button></div>
+  </div>
+  <div class="scrub-wrap"><input type="range" id="scrub" min="0" max="1000" value="1000" aria-label="Replay position"><div id="tlrange"><span id="tlFrom">—</span><span id="tlinfo"></span><span id="tlTo">—</span></div></div>
+</div>
+
+<nav id="sheetTabs" aria-label="Panels">
+  <button data-sheet="sectors">Sectors</button><button data-sheet="manifold">Manifold</button><button data-sheet="sources">Sources</button><button data-sheet="layers">Layers</button>
+</nav>
+
+<div id="tip" role="tooltip"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="lod"></div>
+<div id="help" hidden>
+  <div class="help-card panel" role="dialog" aria-label="Keyboard shortcuts">
+    <h3>Shortcuts <button class="btn icon" id="helpClose" aria-label="Close">✕</button></h3>
+    <dl class="keys">
+      <dt><kbd>Drag</kbd></dt><dd>Orbit</dd>
+      <dt><kbd>Right-drag</kbd></dt><dd>Pan</dd>
+      <dt><kbd>Scroll</kbd></dt><dd>Zoom · macro ↔ micro</dd>
+      <dt><kbd>Click</kbd></dt><dd>Fly to a handle</dd>
+      <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>Switch market</dd>
+      <dt><kbd>Space</kbd></dt><dd>Play / pause replay</dd>
+      <dt><kbd>L</kbd></dt><dd>Back to live</dd>
+      <dt><kbd>F</kbd></dt><dd>Fit view</dd>
+      <dt><kbd>R</kbd></dt><dd>Auto-orbit</dd>
+      <dt><kbd>?</kbd></dt><dd>This panel</dd>
+    </dl>
+    <p class="note">Idle motion (breathing, orbiting, streams) never changes size, colour or glow — only real data does.</p>
+  </div>
+</div>
+
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
