@@ -1,0 +1,191 @@
+{
+  "id": "stocks_us",
+  "title": "US stocks · S&P 500 sectors (sample)",
+  "adapter": "yfinance",
+  "mode": "delayed",
+  "source": "Yahoo Finance via yfinance (unofficial) · polled every 60s · quotes may lag ~15 min",
+  "note": "5 large caps per GICS sector, not the full index. Edges = residual correlation of 5-minute returns over ~5 sessions.",
+  "labels": {
+    "value": "price (USD)",
+    "energy": "session dollar volume (USD)",
+    "delta_ref": "day change vs prev close",
+    "delta_win": "30m change",
+    "delta_kind": "pct",
+    "edges": "residual corr · 5m returns · ~5 sessions",
+    "volume": "bar dollar volume"
+  },
+  "view": {
+    "size_scale": "sqrt",
+    "delta_clip": {
+      "ref": 0.03,
+      "win": 0.008
+    },
+    "default_delta": "ref"
+  },
+  "engine": {
+    "bucket_s": 300,
+    "corr_window": 390,
+    "corr_min": 60,
+    "edge_mode": "residual",
+    "edge_top_k": 3,
+    "edge_min_abs": 0.2,
+    "sector_edge_min_abs": 0.15,
+    "delta_window_s": 1800,
+    "clock": "data",
+    "hawkes": {
+      "tau_short_s": 1800,
+      "tau_long_s": 86400,
+      "alpha": 1.0,
+      "floor_per_s": 1e-05
+    },
+    "event": {
+      "z_vol": 3.0,
+      "z_ret": 3.0,
+      "halflife_obs": 78,
+      "warm": 20
+    }
+  },
+  "adapter_options": {
+    "period": "5d",
+    "interval": "5m",
+    "bar_minutes": 5,
+    "poll_s": 60,
+    "backfill_period": "60d",
+    "live_days": 5
+  },
+  "sectors": [
+    {
+      "id": "tech",
+      "label": "Information Technology",
+      "entities": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AVGO",
+        "ORCL",
+        "AMD",
+        "CRM",
+        "ADBE"
+      ]
+    },
+    {
+      "id": "comm",
+      "label": "Communication Services",
+      "entities": [
+        "GOOGL",
+        "META",
+        "NFLX",
+        "DIS",
+        "TMUS"
+      ]
+    },
+    {
+      "id": "disc",
+      "label": "Consumer Discretionary",
+      "entities": [
+        "AMZN",
+        "TSLA",
+        "HD",
+        "MCD",
+        "NKE"
+      ]
+    },
+    {
+      "id": "staples",
+      "label": "Consumer Staples",
+      "entities": [
+        "WMT",
+        "PG",
+        "KO",
+        "PEP",
+        "COST"
+      ]
+    },
+    {
+      "id": "health",
+      "label": "Health Care",
+      "entities": [
+        "LLY",
+        "UNH",
+        "JNJ",
+        "ABBV",
+        "MRK"
+      ]
+    },
+    {
+      "id": "fin",
+      "label": "Financials",
+      "entities": [
+        "JPM",
+        "V",
+        "MA",
+        "BAC",
+        "GS"
+      ]
+    },
+    {
+      "id": "ind",
+      "label": "Industrials",
+      "entities": [
+        "GE",
+        "CAT",
+        "UNP",
+        "HON",
+        "BA"
+      ]
+    },
+    {
+      "id": "energy",
+      "label": "Energy",
+      "entities": [
+        "XOM",
+        "CVX",
+        "COP",
+        "SLB",
+        "EOG"
+      ]
+    },
+    {
+      "id": "util",
+      "label": "Utilities",
+      "entities": [
+        "NEE",
+        "SO",
+        "DUK",
+        "AEP"
+      ]
+    },
+    {
+      "id": "re",
+      "label": "Real Estate",
+      "entities": [
+        "PLD",
+        "AMT",
+        "EQIX",
+        "SPG"
+      ]
+    },
+    {
+      "id": "mat",
+      "label": "Materials",
+      "entities": [
+        "LIN",
+        "SHW",
+        "FCX",
+        "NEM",
+        "APD"
+      ]
+    }
+  ],
+  "primary_source": "yahoo",
+  "replay": {
+    "source": "yahoo",
+    "value": "close",
+    "energy": "volume",
+    "grains": [
+      "1h",
+      "1d"
+    ],
+    "note": "replay = 5-minute Yahoo bars (60 days backfill) rolled up; energy = dollar volume"
+  }
+}

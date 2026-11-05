@@ -1,0 +1,54 @@
+{
+  "id": "sim",
+  "title": "SIMULATED · synthetic organism (scale test)",
+  "adapter": "simulator",
+  "mode": "simulated",
+  "source": "SIMULATED — synthetic factor model + Hawkes shocks. NOT real data.",
+  "note": "Every number in this view is made up by the simulator. Use only to test rendering scale and the math pipeline.",
+  "labels": {
+    "value": "synthetic level",
+    "energy": "synthetic volume",
+    "delta_ref": "change since start",
+    "delta_win": "1m change",
+    "delta_kind": "pct",
+    "edges": "residual corr · 5s returns"
+  },
+  "view": {
+    "size_scale": "sqrt",
+    "delta_clip": {
+      "ref": 0.05,
+      "win": 0.01
+    },
+    "default_delta": "win"
+  },
+  "engine": {
+    "bucket_s": 5,
+    "corr_window": 60,
+    "corr_min": 15,
+    "edge_mode": "residual",
+    "edge_top_k": 2,
+    "edge_min_abs": 0.3,
+    "sector_edge_min_abs": 0.1,
+    "delta_window_s": 60,
+    "clock": "wall",
+    "persist": false,
+    "hawkes": {
+      "tau_short_s": 20,
+      "tau_long_s": 600,
+      "alpha": 1.0,
+      "floor_per_s": 0.002
+    }
+  },
+  "generate": {
+    "sectors": 12,
+    "per_sector": 60
+  },
+  "adapter_options": {
+    "seed": 7,
+    "dt_s": 1.0
+  },
+  "primary_source": "sim",
+  "replay": {
+    "disabled": "simulated data is never stored"
+  }
+}

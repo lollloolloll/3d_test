@@ -1,0 +1,52 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\stocks_kr.png",
+ "url": "http://127.0.0.1:8790/?market=stocks_kr",
+ "samples": [
+  {
+   "market": "stocks_kr",
+   "mode": "delayed",
+   "badge": "DELAYED",
+   "clock": "data 2026-11-05 15:00:00.000 Asia/Seoul · age 7.7h · rx 1.6s ago",
+   "fps": 20,
+   "cells": 29,
+   "live_cells": 29,
+   "empty_cells": [],
+   "edges": 63,
+   "sector_edges": 12,
+   "msgs": 7,
+   "n_obs": 10469,
+   "data_age_s": 27683.984,
+   "status": [
+    "info: market closed / no new bars — showing last session (latest bar ends 2026-11-05 06:00 UTC)",
+    "ok: polled 29/29 tickers via yfinance · every 60s"
+   ],
+   "phases": [],
+   "sample": [
+    {
+     "id": "005930.KS",
+     "v": 199900,
+     "dr": -0.07561,
+     "dw": -0.00547,
+     "b": 0,
+     "ts": 1793858400000
+    },
+    {
+     "id": "000660.KS",
+     "v": 1255000,
+     "dr": -0.09452,
+     "dw": -0.00712,
+     "b": 0,
+     "ts": 1793858400000
+    },
+    {
+     "id": "373220.KS",
+     "v": 345000,
+     "dr": -0.02128,
+     "dw": -0.01429,
+     "b": 0,
+     "ts": 1793858400000
+    }
+   ]
+  }
+ ]
+}

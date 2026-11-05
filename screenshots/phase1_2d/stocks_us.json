@@ -1,0 +1,54 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\stocks_us.png",
+ "url": "http://127.0.0.1:8790/?market=stocks_us",
+ "samples": [
+  {
+   "market": "stocks_us",
+   "mode": "delayed",
+   "badge": "DELAYED",
+   "clock": "data 2026-11-05 06:00:00.000 Asia/Seoul · age 16.7h · rx 1.9s ago",
+   "fps": 20,
+   "cells": 56,
+   "live_cells": 56,
+   "empty_cells": [],
+   "edges": 132,
+   "sector_edges": 17,
+   "msgs": 4,
+   "n_obs": 21896,
+   "data_age_s": 60050.68,
+   "status": [
+    "info: market closed / no new bars — showing last session (latest bar ends 2026-11-04 21:00 UTC)",
+    "ok: polled 56/56 tickers via yfinance · every 60s"
+   ],
+   "phases": [
+    "staples"
+   ],
+   "sample": [
+    {
+     "id": "AAPL",
+     "v": 349.62,
+     "dr": 0.0539,
+     "dw": -0.00724,
+     "b": 0.13,
+     "ts": 1793826000000
+    },
+    {
+     "id": "MSFT",
+     "v": 556.03,
+     "dr": 0.06771,
+     "dw": -0.00447,
+     "b": 0,
+     "ts": 1793826000000
+    },
+    {
+     "id": "NVDA",
+     "v": 200.285,
+     "dr": -0.03043,
+     "dw": -0.00849,
+     "b": 0,
+     "ts": 1793826000000
+    }
+   ]
+  }
+ ]
+}

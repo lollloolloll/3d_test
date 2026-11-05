@@ -1,0 +1,98 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\crypto_micro_layer1.png",
+ "url": "http://127.0.0.1:8790/?market=crypto",
+ "samples": [
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "LIVE",
+   "clock": "data 2026-11-05 22:45:03.362 Asia/Seoul · age 0.9s · rx 0.2s ago",
+   "fps": 20,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 80,
+   "sector_edges": 8,
+   "msgs": 10,
+   "n_obs": 59060,
+   "data_age_s": 1.087,
+   "status": [
+    "ok: 44/44 symbols listed",
+    "ok: WebSocket connected · 44 symbols · kline_1s + miniTicker"
+   ],
+   "phases": [],
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 79768,
+     "dr": 0.01756,
+     "dw": 0.00095,
+     "b": 1.01,
+     "ts": 1793886303017
+    },
+    {
+     "id": "ETH",
+     "v": 2392.59,
+     "dr": 0.03134,
+     "dw": 0.00206,
+     "b": 0.58,
+     "ts": 1793886303017
+    },
+    {
+     "id": "SOL",
+     "v": 95.48,
+     "dr": 0.02833,
+     "dw": 0.00126,
+     "b": 1.32,
+     "ts": 1793886303000
+    }
+   ]
+  },
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "LIVE",
+   "clock": "data 2026-11-05 22:45:06.574 Asia/Seoul · age 1.1s · rx 0.5s ago",
+   "fps": 20,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 78,
+   "sector_edges": 8,
+   "msgs": 15,
+   "n_obs": 59307,
+   "data_age_s": 1.007,
+   "status": [
+    "ok: 44/44 symbols listed",
+    "ok: WebSocket connected · 44 symbols · kline_1s + miniTicker"
+   ],
+   "phases": [],
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 79772.8,
+     "dr": 0.01751,
+     "dw": 0.00101,
+     "b": 1.84,
+     "ts": 1793886307017
+    },
+    {
+     "id": "ETH",
+     "v": 2392.83,
+     "dr": 0.03139,
+     "dw": 0.00217,
+     "b": 0.9,
+     "ts": 1793886307017
+    },
+    {
+     "id": "SOL",
+     "v": 95.48,
+     "dr": 0.02799,
+     "dw": 0.00126,
+     "b": 1.08,
+     "ts": 1793886307000
+    }
+   ]
+  }
+ ]
+}

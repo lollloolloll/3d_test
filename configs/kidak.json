@@ -1,0 +1,55 @@
+{
+  "id": "kidak",
+  "title": "Kidak market · AI 키보드 · 말투/답장 AI (daily)",
+  "adapter": "kidak",
+  "mode": "daily",
+  "source": "App Store iTunes Lookup + review RSS (kr) · Naver DataLab search trend (optional, env keys) · Google Play planned",
+  "note": "Slow proxy signals, collected daily. Cell size = App Store rating count (log scale). Colour = recent-review mean minus lifetime rating. Pulse = review-arrival Hawkes burst. Ring = how many of the 4 sources feed the app. No Instagram / X data. Grouping and app list are a hand-made config.",
+  "primary_source": "appstore_lookup",
+  "default_sources": ["appstore_lookup", "appstore_reviews", "naver_trend", "google_play"],
+  "labels": {
+    "value": "avg rating (★)", "energy": "rating count",
+    "delta_ref": "recent 50 reviews − lifetime ★", "delta_win": "7d change", "delta_kind": "abs", "delta_win_kind": "pct",
+    "edges": "corr of daily Naver search index (needs keys + ≥20 days)"
+  },
+  "view": {"size_scale": "log", "delta_clip": {"ref": 1.0, "win": 0.1}, "default_delta": "ref"},
+  "replay": {"source": "appstore_reviews", "value": "mean", "energy": "count", "grains": ["1d"],
+             "note": "replay = daily mean ★ of dated reviews; energy = reviews that day (App Store RSS keeps only the latest ≤500)"},
+  "engine": {
+    "bucket_s": 86400, "corr_window": 90, "corr_min": 20, "edge_mode": "raw", "corr_source": "naver_trend",
+    "edge_top_k": 3, "edge_min_abs": 0.4, "sector_edge_min_abs": 0.3,
+    "delta_window_s": 604800, "clock": "wall",
+    "hawkes": {"tau_short_s": 259200, "tau_long_s": 2592000, "alpha": 1.0, "floor_per_s": 0.0000001},
+    "event": {"z_vol": 3.0, "z_ret": 3.0, "halflife_obs": 20, "warm": 10},
+    "phase": {"M_on": 0.7, "B_on": 2.0, "M_off": 0.5, "B_off": 1.3, "min_members": 3}
+  },
+  "adapter_options": {"country": "kr", "refresh_s": 86400, "rss_pages": 10, "naver_start": "2016-01-01", "naver_anchor": ["맞춤법 검사기"]},
+  "sectors": [
+    {"id": "kidak", "label": "Kidak (키닥)", "entities": [
+      {"id": "kidak_app", "label": "키닥 Kidak", "keywords": ["키닥", "kidak"], "note": "App Store id not configured yet — add app_id to configs/kidak.json when published"}
+    ]},
+    {"id": "tone", "label": "말투·답장 AI", "entities": [
+      {"id": "turnton", "label": "턴톤", "app_id": 6760224408, "keywords": ["턴톤"]},
+      {"id": "tokmentor", "label": "톡멘토", "app_id": 6762545240, "keywords": ["톡멘토"]},
+      {"id": "lovebear", "label": "러브베어", "app_id": 6788311522, "keywords": ["러브베어"]},
+      {"id": "softsend", "label": "Softsend", "app_id": 6808136527, "keywords": ["소프트센드", "softsend"]}
+    ]},
+    {"id": "kr_kbd", "label": "한국어 AI 키보드", "entities": [
+      {"id": "naver_smartboard", "label": "네이버 스마트보드", "app_id": 1297816298, "keywords": ["네이버 스마트보드", "스마트보드 키보드"]},
+      {"id": "kingboard", "label": "킹보드", "app_id": 6762074672, "keywords": ["킹보드"]},
+      {"id": "ai_keyboard_kr", "label": "AI 키보드: 번역·맞춤법", "app_id": 6466343783, "keywords": ["AI 키보드", "ai키보드"]}
+    ]},
+    {"id": "global_kbd", "label": "Global AI keyboards", "entities": [
+      {"id": "grammarly", "label": "Grammarly", "app_id": 1158877342, "keywords": ["그래머리", "grammarly"]},
+      {"id": "swiftkey", "label": "SwiftKey", "app_id": 911813648, "keywords": ["스위프트키", "swiftkey"]},
+      {"id": "typeai", "label": "TypeAI", "app_id": 6448661220, "keywords": ["typeai"]},
+      {"id": "typeless", "label": "Typeless", "app_id": 6749257650, "keywords": ["typeless"]},
+      {"id": "orki", "label": "Orki Type", "app_id": 6469163944, "keywords": ["orki"]},
+      {"id": "anywrite", "label": "AnyWrite", "app_id": 6473675965, "keywords": ["anywrite"]}
+    ]},
+    {"id": "llm", "label": "LLM assistants (scale reference)", "entities": [
+      {"id": "chatgpt", "label": "ChatGPT", "app_id": 6448311069, "keywords": ["챗gpt", "chatgpt"]},
+      {"id": "gemini", "label": "Gemini", "app_id": 6477489729, "keywords": ["제미나이", "gemini"]}
+    ]}
+  ]
+}

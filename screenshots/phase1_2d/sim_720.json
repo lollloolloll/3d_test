@@ -1,0 +1,56 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\sim_720.png",
+ "url": "http://127.0.0.1:8790/?market=sim",
+ "samples": [
+  {
+   "market": "sim",
+   "mode": "simulated",
+   "badge": "SIMULATED",
+   "clock": "data 2026-11-05 22:53:32.194 Asia/Seoul · age 1.3s · rx 0.2s ago",
+   "fps": 20,
+   "cells": 720,
+   "live_cells": 720,
+   "empty_cells": [],
+   "edges": 0,
+   "sector_edges": 0,
+   "msgs": 13,
+   "n_obs": 28080,
+   "data_age_s": 2.269,
+   "status": [
+    "warn: SIMULATED data · 720 synthetic entities · not a real market"
+   ],
+   "phases": [
+    "c0",
+    "c1",
+    "c5",
+    "c9"
+   ],
+   "sample": [
+    {
+     "id": "c0-0000",
+     "v": 20.1656,
+     "dr": 0.00213,
+     "dw": 0.00316,
+     "b": 2.41,
+     "ts": 1793886812194
+    },
+    {
+     "id": "c0-0001",
+     "v": 31.8208,
+     "dr": 0.01207,
+     "dw": 0.01649,
+     "b": 2.61,
+     "ts": 1793886812194
+    },
+    {
+     "id": "c0-0002",
+     "v": 13.6235,
+     "dr": 0.02327,
+     "dw": 0.0227,
+     "b": 2.24,
+     "ts": 1793886812194
+    }
+   ]
+  }
+ ]
+}

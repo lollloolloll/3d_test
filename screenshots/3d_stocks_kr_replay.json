@@ -1,0 +1,193 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\3d_stocks_kr_replay.png",
+ "url": "http://127.0.0.1:8790/web/?market=stocks_kr",
+ "samples": [
+  {
+   "market": "stocks_kr",
+   "mode": "delayed",
+   "badge": "Delayed",
+   "clock": "2026-11-05 15:00:59 · age 9.6h",
+   "fps": 60,
+   "cells": 29,
+   "live_cells": 29,
+   "empty_cells": [],
+   "edges": 62,
+   "sector_edges": 11,
+   "msgs": 3,
+   "n_obs": 8758,
+   "data_age_s": 34595.854,
+   "status": [
+    "ok: warm start from history: 0 latest samples, 2088 series points, 519 events",
+    "info: market closed / no new bars — showing last session (latest bar ends 2026-11-05 06:00 UTC)"
+   ],
+   "phases": [],
+   "sources": [
+    "yahoo: ok · last_ok 17.1s ago · 29/29 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "005930.KS 1/1",
+    "000660.KS 1/1",
+    "373220.KS 1/1",
+    "006400.KS 1/1",
+    "051910.KS 1/1",
+    "005490.KS 1/1"
+   ],
+   "replay": null,
+   "timeline": "yahoo · 138,990 stored rows",
+   "sample": [
+    {
+     "id": "005930.KS",
+     "v": 199900,
+     "dr": -0.07561,
+     "dw": -0.00547,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "000660.KS",
+     "v": 1255000,
+     "dr": -0.09452,
+     "dw": -0.00712,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "373220.KS",
+     "v": 345000,
+     "dr": -0.02128,
+     "dw": -0.01429,
+     "b": 0,
+     "ts": 1793858459999
+    }
+   ]
+  },
+  {
+   "market": "stocks_kr",
+   "mode": "delayed",
+   "badge": "Delayed",
+   "clock": "2026-11-05 15:00:59 · age 9.6h",
+   "fps": 26,
+   "cells": 29,
+   "live_cells": 29,
+   "empty_cells": [],
+   "edges": 62,
+   "sector_edges": 11,
+   "msgs": 5,
+   "n_obs": 8758,
+   "data_age_s": 34608.373,
+   "status": [
+    "ok: warm start from history: 0 latest samples, 2088 series points, 519 events",
+    "info: market closed / no new bars — showing last session (latest bar ends 2026-11-05 06:00 UTC)"
+   ],
+   "phases": [],
+   "sources": [
+    "yahoo: ok · last_ok 29.6s ago · 29/29 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "005930.KS 1/1",
+    "000660.KS 1/1",
+    "373220.KS 1/1",
+    "006400.KS 1/1",
+    "051910.KS 1/1",
+    "005490.KS 1/1"
+   ],
+   "replay": null,
+   "timeline": "yahoo · 138,990 stored rows",
+   "sample": [
+    {
+     "id": "005930.KS",
+     "v": 199900,
+     "dr": -0.07561,
+     "dw": -0.00547,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "000660.KS",
+     "v": 1255000,
+     "dr": -0.09452,
+     "dw": -0.00712,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "373220.KS",
+     "v": 345000,
+     "dr": -0.02128,
+     "dw": -0.01429,
+     "b": 0,
+     "ts": 1793858459999
+    }
+   ]
+  },
+  {
+   "market": "stocks_kr",
+   "mode": "delayed",
+   "badge": "Replay · recorded",
+   "clock": "2026-09-30 12:36:00 · recorded",
+   "fps": 20,
+   "cells": 29,
+   "live_cells": 29,
+   "empty_cells": [],
+   "edges": 62,
+   "sector_edges": 11,
+   "msgs": 6,
+   "n_obs": 8758,
+   "data_age_s": 34614.413,
+   "status": [
+    "ok: warm start from history: 0 latest samples, 2088 series points, 519 events",
+    "info: market closed / no new bars — showing last session (latest bar ends 2026-11-05 06:00 UTC)"
+   ],
+   "phases": [],
+   "sources": [
+    "yahoo: ok · last_ok 35.7s ago · 29/29 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "005930.KS 1/1",
+    "000660.KS 1/1",
+    "373220.KS 1/1",
+    "006400.KS 1/1",
+    "051910.KS 1/1",
+    "005490.KS 1/1"
+   ],
+   "replay": {
+    "T": "2026-09-30T03:36:00.000Z",
+    "grain": "1h",
+    "speed": 3600,
+    "rows": 12151,
+    "bigtime": "2026-09-30  12:36",
+    "badge": "Replay · 1 hour / s · paused"
+   },
+   "timeline": "yahoo · 138,990 stored rows",
+   "sample": [
+    {
+     "id": "005930.KS",
+     "v": 199900,
+     "dr": -0.07561,
+     "dw": -0.00547,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "000660.KS",
+     "v": 1255000,
+     "dr": -0.09452,
+     "dw": -0.00712,
+     "b": 0,
+     "ts": 1793858459999
+    },
+    {
+     "id": "373220.KS",
+     "v": 345000,
+     "dr": -0.02128,
+     "dw": -0.01429,
+     "b": 0,
+     "ts": 1793858459999
+    }
+   ]
+  }
+ ]
+}

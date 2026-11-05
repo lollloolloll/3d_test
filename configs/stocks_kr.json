@@ -1,0 +1,239 @@
+{
+  "id": "stocks_kr",
+  "title": "KOSPI · 업종별 대형주 (sample)",
+  "adapter": "yfinance",
+  "mode": "delayed",
+  "source": "Yahoo Finance via yfinance (unofficial) · polled every 60s · KRX quotes delayed",
+  "note": "업종 분류는 이 config의 수작업 그룹이며 공식 KRX 업종이 아님. Edges = residual correlation of 5-minute returns.",
+  "labels": {
+    "value": "price (KRW)",
+    "energy": "session trading value (KRW)",
+    "delta_ref": "전일 대비",
+    "delta_win": "30분 변화",
+    "delta_kind": "pct",
+    "edges": "residual corr · 5m returns · ~5 sessions",
+    "volume": "bar dollar volume"
+  },
+  "view": {
+    "size_scale": "sqrt",
+    "delta_clip": {
+      "ref": 0.04,
+      "win": 0.01
+    },
+    "default_delta": "ref"
+  },
+  "engine": {
+    "bucket_s": 300,
+    "corr_window": 390,
+    "corr_min": 60,
+    "edge_mode": "residual",
+    "edge_top_k": 3,
+    "edge_min_abs": 0.2,
+    "sector_edge_min_abs": 0.15,
+    "delta_window_s": 1800,
+    "clock": "data",
+    "hawkes": {
+      "tau_short_s": 1800,
+      "tau_long_s": 86400,
+      "alpha": 1.0,
+      "floor_per_s": 1e-05
+    },
+    "event": {
+      "z_vol": 3.0,
+      "z_ret": 3.0,
+      "halflife_obs": 78,
+      "warm": 20
+    }
+  },
+  "adapter_options": {
+    "period": "5d",
+    "interval": "5m",
+    "bar_minutes": 5,
+    "poll_s": 60,
+    "backfill_period": "60d",
+    "live_days": 5
+  },
+  "sectors": [
+    {
+      "id": "semi",
+      "label": "반도체",
+      "entities": [
+        {
+          "id": "005930.KS",
+          "label": "삼성전자"
+        },
+        {
+          "id": "000660.KS",
+          "label": "SK하이닉스"
+        }
+      ]
+    },
+    {
+      "id": "battery",
+      "label": "2차전지·소재",
+      "entities": [
+        {
+          "id": "373220.KS",
+          "label": "LG에너지솔루션"
+        },
+        {
+          "id": "006400.KS",
+          "label": "삼성SDI"
+        },
+        {
+          "id": "051910.KS",
+          "label": "LG화학"
+        },
+        {
+          "id": "005490.KS",
+          "label": "POSCO홀딩스"
+        }
+      ]
+    },
+    {
+      "id": "bio",
+      "label": "바이오",
+      "entities": [
+        {
+          "id": "207940.KS",
+          "label": "삼성바이오로직스"
+        },
+        {
+          "id": "068270.KS",
+          "label": "셀트리온"
+        }
+      ]
+    },
+    {
+      "id": "auto",
+      "label": "자동차",
+      "entities": [
+        {
+          "id": "005380.KS",
+          "label": "현대차"
+        },
+        {
+          "id": "000270.KS",
+          "label": "기아"
+        },
+        {
+          "id": "012330.KS",
+          "label": "현대모비스"
+        }
+      ]
+    },
+    {
+      "id": "net",
+      "label": "인터넷·게임",
+      "entities": [
+        {
+          "id": "035420.KS",
+          "label": "NAVER"
+        },
+        {
+          "id": "035720.KS",
+          "label": "카카오"
+        },
+        {
+          "id": "259960.KS",
+          "label": "크래프톤"
+        },
+        {
+          "id": "036570.KS",
+          "label": "엔씨소프트"
+        }
+      ]
+    },
+    {
+      "id": "fin",
+      "label": "금융",
+      "entities": [
+        {
+          "id": "105560.KS",
+          "label": "KB금융"
+        },
+        {
+          "id": "055550.KS",
+          "label": "신한지주"
+        },
+        {
+          "id": "086790.KS",
+          "label": "하나금융지주"
+        },
+        {
+          "id": "323410.KS",
+          "label": "카카오뱅크"
+        }
+      ]
+    },
+    {
+      "id": "ship",
+      "label": "조선·방산",
+      "entities": [
+        {
+          "id": "012450.KS",
+          "label": "한화에어로스페이스"
+        },
+        {
+          "id": "042660.KS",
+          "label": "한화오션"
+        },
+        {
+          "id": "329180.KS",
+          "label": "HD현대중공업"
+        },
+        {
+          "id": "009540.KS",
+          "label": "HD한국조선해양"
+        }
+      ]
+    },
+    {
+      "id": "tel",
+      "label": "통신·지주·전자",
+      "entities": [
+        {
+          "id": "017670.KS",
+          "label": "SK텔레콤"
+        },
+        {
+          "id": "030200.KS",
+          "label": "KT"
+        },
+        {
+          "id": "028260.KS",
+          "label": "삼성물산"
+        },
+        {
+          "id": "066570.KS",
+          "label": "LG전자"
+        },
+        {
+          "id": "003550.KS",
+          "label": "LG"
+        }
+      ]
+    },
+    {
+      "id": "ent",
+      "label": "엔터",
+      "entities": [
+        {
+          "id": "352820.KS",
+          "label": "하이브"
+        }
+      ]
+    }
+  ],
+  "primary_source": "yahoo",
+  "replay": {
+    "source": "yahoo",
+    "value": "close",
+    "energy": "volume",
+    "grains": [
+      "1h",
+      "1d"
+    ],
+    "note": "replay = 5-minute Yahoo bars (60 days backfill) rolled up; energy = dollar volume"
+  }
+}

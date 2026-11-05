@@ -1,0 +1,146 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\3d_static_pages.png",
+ "url": "http://127.0.0.1:8800/3d_test/?market=crypto",
+ "samples": [
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "Replay · recorded",
+   "clock": "2026-11-02 23:21:00 · recorded",
+   "fps": 60,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 82,
+   "sector_edges": 8,
+   "msgs": 1,
+   "n_obs": 82334,
+   "data_age_s": 439.297,
+   "status": [
+    "ok: warm start from history: 86 latest samples, 37869 series points, 7710 events",
+    "ok: 44/44 symbols listed",
+    "ok: history: +0 1m klines stored (last 3 days, gaps only)",
+    "ok: WebSocket connected · 44 symbols"
+   ],
+   "phases": [],
+   "sources": [
+    "binance_ticker: ok · last_ok 438.9s ago · WS miniTicker streaming",
+    "binance_kline: ok · last_ok 439.4s ago · WS kline_1s streaming"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "BTC 2/2",
+    "ETH 2/2",
+    "SOL 2/2",
+    "ADA 2/2",
+    "AVAX 2/2",
+    "DOT 2/2"
+   ],
+   "replay": {
+    "T": "2026-11-02T14:21:00.000Z",
+    "grain": "1h",
+    "speed": 3600,
+    "rows": 3182,
+    "bigtime": "2026-11-02  23:21",
+    "badge": "Replay · 1 hour / s"
+   },
+   "timeline": "binance_kline · 192,446 stored rows",
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 76648,
+     "dr": -0.0491,
+     "dw": 0.00433,
+     "b": 0.06,
+     "ts": 1793892776017
+    },
+    {
+     "id": "ETH",
+     "v": 2283.15,
+     "dr": -0.06282,
+     "dw": 0.00503,
+     "b": 0,
+     "ts": 1793892776018
+    },
+    {
+     "id": "SOL",
+     "v": 91.21,
+     "dr": -0.05775,
+     "dw": 0.00796,
+     "b": 0.23,
+     "ts": 1793892775795
+    }
+   ]
+  },
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "Replay · recorded",
+   "clock": "2026-11-03 00:03:00 · recorded",
+   "fps": 38,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 82,
+   "sector_edges": 8,
+   "msgs": 1,
+   "n_obs": 82334,
+   "data_age_s": 451.813,
+   "status": [
+    "ok: warm start from history: 86 latest samples, 37869 series points, 7710 events",
+    "ok: 44/44 symbols listed",
+    "ok: history: +0 1m klines stored (last 3 days, gaps only)",
+    "ok: WebSocket connected · 44 symbols"
+   ],
+   "phases": [],
+   "sources": [
+    "binance_ticker: ok · last_ok 451.4s ago · WS miniTicker streaming",
+    "binance_kline: ok · last_ok 451.9s ago · WS kline_1s streaming"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "BTC 2/2",
+    "ETH 2/2",
+    "SOL 2/2",
+    "ADA 2/2",
+    "AVAX 2/2",
+    "DOT 2/2"
+   ],
+   "replay": {
+    "T": "2026-11-02T15:03:00.000Z",
+    "grain": "1h",
+    "speed": 3600,
+    "rows": 3182,
+    "bigtime": "2026-11-03  00:03",
+    "badge": "Replay · 1 hour / s"
+   },
+   "timeline": "binance_kline · 192,446 stored rows",
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 76648,
+     "dr": -0.0491,
+     "dw": 0.00433,
+     "b": 0.06,
+     "ts": 1793892776017
+    },
+    {
+     "id": "ETH",
+     "v": 2283.15,
+     "dr": -0.06282,
+     "dw": 0.00503,
+     "b": 0,
+     "ts": 1793892776018
+    },
+    {
+     "id": "SOL",
+     "v": 91.21,
+     "dr": -0.05775,
+     "dw": 0.00796,
+     "b": 0.23,
+     "ts": 1793892775795
+    }
+   ]
+  }
+ ]
+}

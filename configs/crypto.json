@@ -1,0 +1,147 @@
+{
+  "id": "crypto",
+  "title": "Crypto · Binance spot (USDT)",
+  "adapter": "binance",
+  "mode": "live",
+  "source": "Binance public WebSocket (kline_1s + miniTicker) · no API key",
+  "note": "Sectors are a hand-made grouping in this config, not an official taxonomy. Edges = residual correlation of 10s returns (market mode removed).",
+  "labels": {
+    "value": "price (USDT)",
+    "energy": "24h quote volume (USDT)",
+    "delta_ref": "24h change",
+    "delta_win": "5m change",
+    "delta_kind": "pct",
+    "edges": "residual corr · 10s returns · last 15 min"
+  },
+  "view": {
+    "size_scale": "sqrt",
+    "delta_clip": {
+      "ref": 0.08,
+      "win": 0.012
+    },
+    "default_delta": "win"
+  },
+  "engine": {
+    "bucket_s": 10,
+    "corr_window": 90,
+    "corr_min": 18,
+    "edge_mode": "residual",
+    "edge_top_k": 3,
+    "edge_min_abs": 0.25,
+    "sector_edge_min_abs": 0.15,
+    "delta_window_s": 300,
+    "clock": "wall",
+    "hawkes": {
+      "tau_short_s": 20,
+      "tau_long_s": 900,
+      "alpha": 1.0,
+      "floor_per_s": 0.002
+    },
+    "event": {
+      "z_vol": 4.0,
+      "z_ret": 3.0,
+      "halflife_obs": 120,
+      "warm": 30
+    },
+    "corr_source": "binance_kline",
+    "raw_retention_days": 3
+  },
+  "adapter_options": {
+    "quote": "USDT",
+    "bootstrap_1s_klines": 1000,
+    "backfill_days": 3
+  },
+  "sectors": [
+    {
+      "id": "l1",
+      "label": "Layer 1",
+      "entities": [
+        "BTC",
+        "ETH",
+        "SOL",
+        "ADA",
+        "AVAX",
+        "DOT",
+        "NEAR",
+        "APT",
+        "SUI",
+        "TRX",
+        "TON",
+        "SEI"
+      ]
+    },
+    {
+      "id": "l2",
+      "label": "Layer 2 / Scaling",
+      "entities": [
+        "ARB",
+        "OP",
+        "POL",
+        "STRK",
+        "IMX",
+        "ZK"
+      ]
+    },
+    {
+      "id": "defi",
+      "label": "DeFi",
+      "entities": [
+        "UNI",
+        "AAVE",
+        "LINK",
+        "LDO",
+        "CRV",
+        "PENDLE",
+        "COMP",
+        "JUP",
+        "ENA"
+      ]
+    },
+    {
+      "id": "meme",
+      "label": "Meme",
+      "entities": [
+        "DOGE",
+        "SHIB",
+        "PEPE",
+        "FLOKI",
+        "BONK",
+        "WIF"
+      ]
+    },
+    {
+      "id": "ai",
+      "label": "AI / Compute",
+      "entities": [
+        "FET",
+        "RENDER",
+        "TAO",
+        "WLD",
+        "GRT",
+        "VIRTUAL"
+      ]
+    },
+    {
+      "id": "pay",
+      "label": "Exchange / Payments",
+      "entities": [
+        "BNB",
+        "XRP",
+        "XLM",
+        "LTC",
+        "BCH"
+      ]
+    }
+  ],
+  "primary_source": "binance_ticker",
+  "replay": {
+    "source": "binance_kline",
+    "value": "close",
+    "energy": "volume",
+    "grains": [
+      "1m",
+      "1h"
+    ],
+    "note": "replay = 1-minute closes and quote volume (REST backfill + live 1s klines rolled up)"
+  }
+}

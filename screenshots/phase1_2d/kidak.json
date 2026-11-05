@@ -1,0 +1,59 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\kidak.png",
+ "url": "http://127.0.0.1:8790/?market=kidak",
+ "samples": [
+  {
+   "market": "kidak",
+   "mode": "daily",
+   "badge": "DAILY · STUB",
+   "clock": "data 2026-11-05 22:36:08.718 Asia/Seoul · age 3m · rx 0.2s ago",
+   "fps": 20,
+   "cells": 21,
+   "live_cells": 15,
+   "empty_cells": [
+    "kidak_app: app_id not configured yet — add the App Store id to configs/kidak.json when published",
+    "q_kidak: Naver DataLab skipped: NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set",
+    "q_ai_kbd: Naver DataLab skipped: NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set",
+    "q_tone: Naver DataLab skipped: NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set",
+    "q_spell: Naver DataLab skipped: NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set",
+    "q_reply: Naver DataLab skipped: NAVER_CLIENT_ID / NAVER_CLIENT_SECRET not set"
+   ],
+   "edges": 0,
+   "sector_edges": 0,
+   "msgs": 7,
+   "n_obs": 15,
+   "data_age_s": 182.944,
+   "status": [
+    "ok: App Store lookup+RSS: 15/15 apps · refresh every 6h",
+    "skip: Naver DataLab skipped — set NAVER_CLIENT_ID and NAVER_CLIENT_SECRET to enable"
+   ],
+   "phases": [],
+   "sample": [
+    {
+     "id": "kidak_app",
+     "v": null,
+     "dr": null,
+     "dw": null,
+     "b": null,
+     "ts": null
+    },
+    {
+     "id": "turnton",
+     "v": 5,
+     "dr": null,
+     "dw": 0,
+     "b": null,
+     "ts": 1793885751304
+    },
+    {
+     "id": "tokmentor",
+     "v": 5,
+     "dr": null,
+     "dw": 0,
+     "b": null,
+     "ts": 1793885752634
+    }
+   ]
+  }
+ ]
+}

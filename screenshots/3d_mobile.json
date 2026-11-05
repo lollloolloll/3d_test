@@ -1,0 +1,195 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\3d_mobile.png",
+ "url": "http://127.0.0.1:8790/web/?market=crypto",
+ "samples": [
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "Live",
+   "clock": "2026-11-06 00:39:41",
+   "fps": 20,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 77,
+   "sector_edges": 8,
+   "msgs": 13,
+   "n_obs": 111014,
+   "data_age_s": 0.778,
+   "status": [
+    "ok: warm start from history: 86 latest samples, 37869 series points, 7710 events",
+    "ok: 44/44 symbols listed",
+    "ok: history: +0 1m klines stored (last 3 days, gaps only)",
+    "ok: WebSocket connected · 44 symbols"
+   ],
+   "phases": [],
+   "sources": [
+    "binance_ticker: ok · last_ok 0.3s ago · WS miniTicker streaming",
+    "binance_kline: ok · last_ok 0.6s ago · WS kline_1s streaming"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "BTC 2/2",
+    "ETH 2/2",
+    "SOL 2/2",
+    "ADA 2/2",
+    "AVAX 2/2",
+    "DOT 2/2"
+   ],
+   "replay": null,
+   "timeline": "binance_kline · 192,747 stored rows",
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 76490,
+     "dr": -0.05099,
+     "dw": -0.00222,
+     "b": 1.91,
+     "ts": 1793893182016
+    },
+    {
+     "id": "ETH",
+     "v": 2279.31,
+     "dr": -0.06428,
+     "dw": -0.00311,
+     "b": 2.73,
+     "ts": 1793893182018
+    },
+    {
+     "id": "SOL",
+     "v": 91.2,
+     "dr": -0.05805,
+     "dw": -0.00186,
+     "b": 0.08,
+     "ts": 1793893181795
+    }
+   ]
+  },
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "Live",
+   "clock": "2026-11-06 00:39:54",
+   "fps": 20,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 80,
+   "sector_edges": 8,
+   "msgs": 26,
+   "n_obs": 111816,
+   "data_age_s": 1.093,
+   "status": [
+    "ok: warm start from history: 86 latest samples, 37869 series points, 7710 events",
+    "ok: 44/44 symbols listed",
+    "ok: history: +0 1m klines stored (last 3 days, gaps only)",
+    "ok: WebSocket connected · 44 symbols"
+   ],
+   "phases": [],
+   "sources": [
+    "binance_ticker: ok · last_ok 0.7s ago · WS miniTicker streaming",
+    "binance_kline: ok · last_ok 1.1s ago · WS kline_1s streaming"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "BTC 2/2",
+    "ETH 2/2",
+    "SOL 2/2",
+    "ADA 2/2",
+    "AVAX 2/2",
+    "DOT 2/2"
+   ],
+   "replay": null,
+   "timeline": "binance_kline · 192,747 stored rows",
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 76446,
+     "dr": -0.05162,
+     "dw": -0.00298,
+     "b": 1.78,
+     "ts": 1793893194017
+    },
+    {
+     "id": "ETH",
+     "v": 2278.03,
+     "dr": -0.06488,
+     "dw": -0.00389,
+     "b": 1.52,
+     "ts": 1793893194018
+    },
+    {
+     "id": "SOL",
+     "v": 91.08,
+     "dr": -0.05919,
+     "dw": -0.00328,
+     "b": 1.8,
+     "ts": 1793893193795
+    }
+   ]
+  },
+  {
+   "market": "crypto",
+   "mode": "live",
+   "badge": "Live",
+   "clock": "2026-11-06 00:39:57",
+   "fps": 20,
+   "cells": 44,
+   "live_cells": 44,
+   "empty_cells": [],
+   "edges": 80,
+   "sector_edges": 8,
+   "msgs": 29,
+   "n_obs": 112006,
+   "data_age_s": 1.299,
+   "status": [
+    "ok: warm start from history: 86 latest samples, 37869 series points, 7710 events",
+    "ok: 44/44 symbols listed",
+    "ok: history: +0 1m klines stored (last 3 days, gaps only)",
+    "ok: WebSocket connected · 44 symbols"
+   ],
+   "phases": [],
+   "sources": [
+    "binance_ticker: ok · last_ok 0.9s ago · WS miniTicker streaming",
+    "binance_kline: ok · last_ok 1.1s ago · WS kline_1s streaming"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "BTC 2/2",
+    "ETH 2/2",
+    "SOL 2/2",
+    "ADA 2/2",
+    "AVAX 2/2",
+    "DOT 2/2"
+   ],
+   "replay": null,
+   "timeline": "binance_kline · 192,747 stored rows",
+   "sample": [
+    {
+     "id": "BTC",
+     "v": 76453,
+     "dr": -0.05153,
+     "dw": -0.00289,
+     "b": 1.54,
+     "ts": 1793893197017
+    },
+    {
+     "id": "ETH",
+     "v": 2278.63,
+     "dr": -0.06469,
+     "dw": -0.00363,
+     "b": 1.31,
+     "ts": 1793893197018
+    },
+    {
+     "id": "SOL",
+     "v": 91.07,
+     "dr": -0.05939,
+     "dw": -0.00339,
+     "b": 1.56,
+     "ts": 1793893196796
+    }
+   ]
+  }
+ ]
+}

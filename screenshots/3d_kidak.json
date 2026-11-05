@@ -1,0 +1,201 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\3d_kidak.png",
+ "url": "http://127.0.0.1:8790/web/?market=kidak",
+ "samples": [
+  {
+   "market": "kidak",
+   "mode": "daily",
+   "badge": "Daily",
+   "clock": "2026-11-05 23:14:23 · age 84m",
+   "fps": 60,
+   "cells": 16,
+   "live_cells": 15,
+   "empty_cells": [
+    "kidak_app: waiting for first data"
+   ],
+   "edges": 0,
+   "sector_edges": 0,
+   "msgs": 6,
+   "n_obs": 0,
+   "data_age_s": 5039.608,
+   "status": [
+    "ok: warm start from history: 21 latest samples, 0 series points, 1162 events",
+    "info: daily source · last collection 2026-11-05 14:14 UTC · next in 22.8 h (or run: python run.py --collect kidak)"
+   ],
+   "phases": [],
+   "sources": [
+    "appstore_lookup: ok · last_ok 5039.2s ago · 15/15 apps (from history)",
+    "appstore_reviews: ok · last_ok 5039.2s ago · 1612 reviews in RSS, +0 new stored (from history)",
+    "naver_trend: skip · last_ok — · skipped — set NAVER_CLIENT_ID and NAVER_CLIENT_SECRET to enable (from history)",
+    "google_play: planned · last_ok — · planned — no official public ratings/reviews API; not fetched"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "kidak_app 0/4",
+    "turnton 1/4",
+    "tokmentor 1/4",
+    "lovebear 1/4",
+    "softsend 1/4",
+    "naver_smartboard 2/4"
+   ],
+   "replay": null,
+   "timeline": "appstore_reviews · 3,332 stored rows",
+   "sample": [
+    {
+     "id": "kidak_app",
+     "v": null,
+     "dr": null,
+     "dw": null,
+     "b": null,
+     "ts": null
+    },
+    {
+     "id": "turnton",
+     "v": 5,
+     "dr": null,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888044674
+    },
+    {
+     "id": "tokmentor",
+     "v": 5,
+     "dr": 0,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888045521
+    }
+   ]
+  },
+  {
+   "market": "kidak",
+   "mode": "daily",
+   "badge": "Daily",
+   "clock": "2026-11-05 23:14:23 · age 84m",
+   "fps": 20,
+   "cells": 16,
+   "live_cells": 15,
+   "empty_cells": [
+    "kidak_app: waiting for first data"
+   ],
+   "edges": 0,
+   "sector_edges": 0,
+   "msgs": 13,
+   "n_obs": 0,
+   "data_age_s": 5052.135,
+   "status": [
+    "ok: warm start from history: 21 latest samples, 0 series points, 1162 events",
+    "info: daily source · last collection 2026-11-05 14:14 UTC · next in 22.8 h (or run: python run.py --collect kidak)"
+   ],
+   "phases": [],
+   "sources": [
+    "appstore_lookup: ok · last_ok 5051.7s ago · 15/15 apps (from history)",
+    "appstore_reviews: ok · last_ok 5051.7s ago · 1612 reviews in RSS, +0 new stored (from history)",
+    "naver_trend: skip · last_ok — · skipped — set NAVER_CLIENT_ID and NAVER_CLIENT_SECRET to enable (from history)",
+    "google_play: planned · last_ok — · planned — no official public ratings/reviews API; not fetched"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "kidak_app 0/4",
+    "turnton 1/4",
+    "tokmentor 1/4",
+    "lovebear 1/4",
+    "softsend 1/4",
+    "naver_smartboard 2/4"
+   ],
+   "replay": null,
+   "timeline": "appstore_reviews · 3,332 stored rows",
+   "sample": [
+    {
+     "id": "kidak_app",
+     "v": null,
+     "dr": null,
+     "dw": null,
+     "b": null,
+     "ts": null
+    },
+    {
+     "id": "turnton",
+     "v": 5,
+     "dr": null,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888044674
+    },
+    {
+     "id": "tokmentor",
+     "v": 5,
+     "dr": 0,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888045521
+    }
+   ]
+  },
+  {
+   "market": "kidak",
+   "mode": "daily",
+   "badge": "Daily",
+   "clock": "2026-11-05 23:14:23 · age 84m",
+   "fps": 20,
+   "cells": 16,
+   "live_cells": 15,
+   "empty_cells": [
+    "kidak_app: waiting for first data"
+   ],
+   "edges": 0,
+   "sector_edges": 0,
+   "msgs": 14,
+   "n_obs": 0,
+   "data_age_s": 5055.28,
+   "status": [
+    "ok: warm start from history: 21 latest samples, 0 series points, 1162 events",
+    "info: daily source · last collection 2026-11-05 14:14 UTC · next in 22.8 h (or run: python run.py --collect kidak)"
+   ],
+   "phases": [],
+   "sources": [
+    "appstore_lookup: ok · last_ok 5054.9s ago · 15/15 apps (from history)",
+    "appstore_reviews: ok · last_ok 5054.8s ago · 1612 reviews in RSS, +0 new stored (from history)",
+    "naver_trend: skip · last_ok — · skipped — set NAVER_CLIENT_ID and NAVER_CLIENT_SECRET to enable (from history)",
+    "google_play: planned · last_ok — · planned — no official public ratings/reviews API; not fetched"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "kidak_app 0/4",
+    "turnton 1/4",
+    "tokmentor 1/4",
+    "lovebear 1/4",
+    "softsend 1/4",
+    "naver_smartboard 2/4"
+   ],
+   "replay": null,
+   "timeline": "appstore_reviews · 3,332 stored rows",
+   "sample": [
+    {
+     "id": "kidak_app",
+     "v": null,
+     "dr": null,
+     "dw": null,
+     "b": null,
+     "ts": null
+    },
+    {
+     "id": "turnton",
+     "v": 5,
+     "dr": null,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888044674
+    },
+    {
+     "id": "tokmentor",
+     "v": 5,
+     "dr": 0,
+     "dw": 0,
+     "b": null,
+     "ts": 1793888045521
+    }
+   ]
+  }
+ ]
+}

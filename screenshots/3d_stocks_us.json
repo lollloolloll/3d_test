@@ -1,0 +1,204 @@
+{
+ "screenshot": "D:\\claude\\kidak-promotion\\market-organism\\screenshots\\3d_stocks_us.png",
+ "url": "http://127.0.0.1:8790/web/?market=stocks_us",
+ "samples": [
+  {
+   "market": "stocks_us",
+   "mode": "delayed",
+   "badge": "Delayed",
+   "clock": "2026-11-06 00:36:17 · age 34s",
+   "fps": 60,
+   "cells": 56,
+   "live_cells": 56,
+   "empty_cells": [],
+   "edges": 134,
+   "sector_edges": 16,
+   "msgs": 2,
+   "n_obs": 14560,
+   "data_age_s": 36.007,
+   "status": [
+    "ok: warm start from history: 56 latest samples, 7334 series points, 504 events",
+    "ok: market open — 5m bars, delayed"
+   ],
+   "phases": [
+    "tech",
+    "comm",
+    "health",
+    "fin",
+    "mat"
+   ],
+   "sources": [
+    "yahoo: ok · last_ok 35.3s ago · 56/56 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "AAPL 1/1",
+    "MSFT 1/1",
+    "NVDA 1/1",
+    "AVGO 1/1",
+    "ORCL 1/1",
+    "AMD 1/1"
+   ],
+   "replay": null,
+   "timeline": "yahoo · 296,155 stored rows",
+   "sample": [
+    {
+     "id": "AAPL",
+     "v": 349.04,
+     "dr": -0.00166,
+     "dw": -0.00074,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "MSFT",
+     "v": 541.3,
+     "dr": -0.02649,
+     "dw": -0.00614,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "NVDA",
+     "v": 187.475,
+     "dr": -0.06396,
+     "dw": -0.00922,
+     "b": 8,
+     "ts": 1793892977257
+    }
+   ]
+  },
+  {
+   "market": "stocks_us",
+   "mode": "delayed",
+   "badge": "Delayed",
+   "clock": "2026-11-06 00:36:17 · age 48s",
+   "fps": 29,
+   "cells": 56,
+   "live_cells": 56,
+   "empty_cells": [],
+   "edges": 134,
+   "sector_edges": 16,
+   "msgs": 5,
+   "n_obs": 14560,
+   "data_age_s": 48.542,
+   "status": [
+    "ok: warm start from history: 56 latest samples, 7334 series points, 504 events",
+    "ok: market open — 5m bars, delayed"
+   ],
+   "phases": [
+    "tech",
+    "comm",
+    "health",
+    "fin",
+    "mat"
+   ],
+   "sources": [
+    "yahoo: ok · last_ok 47.8s ago · 56/56 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "AAPL 1/1",
+    "MSFT 1/1",
+    "NVDA 1/1",
+    "AVGO 1/1",
+    "ORCL 1/1",
+    "AMD 1/1"
+   ],
+   "replay": null,
+   "timeline": "yahoo · 296,155 stored rows",
+   "sample": [
+    {
+     "id": "AAPL",
+     "v": 349.04,
+     "dr": -0.00166,
+     "dw": -0.00074,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "MSFT",
+     "v": 541.3,
+     "dr": -0.02649,
+     "dw": -0.00614,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "NVDA",
+     "v": 187.475,
+     "dr": -0.06396,
+     "dw": -0.00922,
+     "b": 8,
+     "ts": 1793892977257
+    }
+   ]
+  },
+  {
+   "market": "stocks_us",
+   "mode": "delayed",
+   "badge": "Delayed",
+   "clock": "2026-11-06 00:36:17 · age 51s",
+   "fps": 20,
+   "cells": 56,
+   "live_cells": 56,
+   "empty_cells": [],
+   "edges": 134,
+   "sector_edges": 16,
+   "msgs": 5,
+   "n_obs": 14560,
+   "data_age_s": 51.547,
+   "status": [
+    "ok: warm start from history: 56 latest samples, 7334 series points, 504 events",
+    "ok: market open — 5m bars, delayed"
+   ],
+   "phases": [
+    "tech",
+    "comm",
+    "health",
+    "fin",
+    "mat"
+   ],
+   "sources": [
+    "yahoo: ok · last_ok 50.8s ago · 56/56 tickers"
+   ],
+   "stale_chip": null,
+   "coverage": [
+    "AAPL 1/1",
+    "MSFT 1/1",
+    "NVDA 1/1",
+    "AVGO 1/1",
+    "ORCL 1/1",
+    "AMD 1/1"
+   ],
+   "replay": null,
+   "timeline": "yahoo · 296,155 stored rows",
+   "sample": [
+    {
+     "id": "AAPL",
+     "v": 349.04,
+     "dr": -0.00166,
+     "dw": -0.00074,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "MSFT",
+     "v": 541.3,
+     "dr": -0.02649,
+     "dw": -0.00614,
+     "b": 0,
+     "ts": 1793892977257
+    },
+    {
+     "id": "NVDA",
+     "v": 187.475,
+     "dr": -0.06396,
+     "dw": -0.00922,
+     "b": 8,
+     "ts": 1793892977257
+    }
+   ]
+  }
+ ]
+}
