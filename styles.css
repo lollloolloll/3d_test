@@ -307,3 +307,5 @@ kbd { display: inline-block; min-width: 22px; padding: 2px 6px; border-radius: 5
 .kv dd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kv dd .sn { display: inline-block; max-width: 112px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; color: var(--ink2); font-family: var(--sans); }
 .guide { gap: 6px 14px; }
+
+a.btn { text-decoration: none; }
