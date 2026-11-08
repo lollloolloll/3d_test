@@ -295,7 +295,7 @@ Delayed markets evaluate the decay at the latest data time (`clock: data`).
 
 Each member is a spin *s_i = sign(Δ)*. The sector **magnetisation** is *M = mean(s_i)* ∈ [−1, 1]. A sector becomes
 **phase-locked** when |M| ≥ 0.7 and B_sector ≥ 2 (with at least 3 members). It unlocks only when |M| < 0.5 or B < 1.3.
-The hysteresis is deliberate, to avoid flicker. The live values are shown in the model strip under the header.
+The hysteresis is deliberate, to avoid flicker. A sector in this state is tagged IN SYNC and its ring turns white.
 
 ### Where Lotka–Volterra fits (next step, not implemented)
 

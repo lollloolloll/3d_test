@@ -49,10 +49,10 @@
 <div id="bigtime" hidden><div class="t" id="btT">—</div><div class="r" id="btR">Replay</div><div class="n" id="btN"></div></div>
 
 <!-- panels -->
-<section id="pManifold" class="panel tl" data-sheet="manifold" aria-label="Manifold">
-  <h3>Manifold <span id="mhint">live values</span></h3>
+<section id="pManifold" class="panel tl" data-sheet="manifold" aria-label="Market overview">
+  <h3>Market <span id="mhint">live</span></h3>
   <dl id="mstats" class="kv"></dl>
-  <div class="hist-wrap"><div class="hist-cap"><span>Δ distribution · entities</span><span id="histRange"></span></div><div id="hist"></div></div>
+  <div class="hist-wrap"><div class="hist-cap"><span>Spread of changes</span><span id="histRange"></span></div><div id="hist"></div></div>
 </section>
 
 <section id="pSources" class="panel tr" data-sheet="sources" aria-label="Data sources">
@@ -62,31 +62,30 @@
 </section>
 
 <section id="pSectors" class="panel bl" data-sheet="sectors" aria-label="Sectors">
-  <h3>Sectors <span id="vhint">handles</span></h3>
+  <h3>Sectors <span id="vhint"></span></h3>
   <div id="vrows" role="list"></div>
 </section>
 
 <section id="pLayers" class="panel br" data-sheet="layers" aria-label="Layers and encoding">
-  <h3>Layers <span>encoding</span></h3>
+  <h3>Layers <span>what you see</span></h3>
   <div id="layers">
-    <label class="layer" data-k="manifold"><i class="ico ico-man"></i><span class="ln"><b>Manifold</b><small>hole size = sector energy · lift = sector Δ · glow = burst</small></span><input type="checkbox" class="sw" checked></label>
-    <label class="layer" data-k="cells"><i class="ico ico-cell"></i><span class="ln"><b>Cells</b><small id="lgSize">size = energy · colour = Δ · flare = burst</small></span><input type="checkbox" class="sw" checked></label>
-    <label class="layer" data-k="arcs"><i class="ico ico-flow"></i><span class="ln"><b>Flows</b><small id="lgEdge">correlation ρ · cyan + / amber −</small></span><input type="checkbox" class="sw" checked></label>
-    <label class="layer" data-k="core"><i class="ico ico-core"></i><span class="ln"><b>Core</b><small>market Δ · glow = market burst · σ axis</small></span><input type="checkbox" class="sw" checked></label>
-    <label class="layer" data-k="streams"><i class="ico ico-stream"></i><span class="ln"><b>Streams</b><small>decorative · speed = market burst</small></span><input type="checkbox" class="sw" checked></label>
-    <label class="layer" data-k="stars"><i class="ico ico-space"></i><span class="ln"><b>Space</b><small>decorative backdrop</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="manifold"><i class="ico ico-man"></i><span class="ln"><b>Sectors</b><small>ring size = share of trading · raised = rising · glow = busier than usual</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="cells"><i class="ico ico-cell"></i><span class="ln"><b>Assets</b><small id="lgSize">size = volume · colour = change · flash = new data</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="arcs"><i class="ico ico-flow"></i><span class="ln"><b>Links</b><small id="lgEdge">lines join assets that move together</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="core"><i class="ico ico-core"></i><span class="ln"><b>Centre</b><small>whole-market change</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="streams"><i class="ico ico-stream"></i><span class="ln"><b>Streams</b><small>decoration · faster when the market is busy</small></span><input type="checkbox" class="sw" checked></label>
+    <label class="layer" data-k="stars"><i class="ico ico-space"></i><span class="ln"><b>Space</b><small>decoration</small></span><input type="checkbox" class="sw" checked></label>
   </div>
   <div class="scale-wrap"><div id="scale"></div><div class="scalelab"><span id="smin"></span><span>0</span><span id="smax"></span></div></div>
   <div class="ctrls">
-    <div class="seg sm" role="group" aria-label="Delta"><button id="bRef">Δ ref</button><button id="bWin">Δ window</button></div>
+    <div class="seg sm" role="group" aria-label="Change period"><button id="bRef">Δ ref</button><button id="bWin">Δ window</button></div>
     <div class="seg sm" role="group" aria-label="Colour convention"><button id="bKR" title="Korean convention: up = red">▲ red</button><button id="bUS" title="US convention: up = green">▲ green</button></div>
     <div class="row-btns"><button class="btn" id="bSpin" title="R">Auto-orbit</button><button class="btn" id="bFit" title="F">Fit view</button></div>
   </div>
 </section>
 
-<div id="eq" class="panel eqp" aria-label="Model">
-  <div id="eqMain" class="math"></div>
-  <div id="eqs" class="eqs"></div>
+<div id="eq" class="panel eqp" aria-label="How to read">
+  <div id="guide" class="guide"></div>
 </div>
 
 <div id="timeline" class="panel" aria-label="Timeline">
@@ -99,7 +98,7 @@
 </div>
 
 <nav id="sheetTabs" aria-label="Panels">
-  <button data-sheet="sectors">Sectors</button><button data-sheet="manifold">Manifold</button><button data-sheet="sources">Sources</button><button data-sheet="layers">Layers</button>
+  <button data-sheet="sectors">Sectors</button><button data-sheet="manifold">Market</button><button data-sheet="sources">Sources</button><button data-sheet="layers">Layers</button>
 </nav>
 
 <div id="tip" role="tooltip"></div>
@@ -111,8 +110,8 @@
     <dl class="keys">
       <dt><kbd>Drag</kbd></dt><dd>Orbit</dd>
       <dt><kbd>Right-drag</kbd></dt><dd>Pan</dd>
-      <dt><kbd>Scroll</kbd></dt><dd>Zoom · macro ↔ micro</dd>
-      <dt><kbd>Click</kbd></dt><dd>Fly to a handle</dd>
+      <dt><kbd>Scroll</kbd></dt><dd>Zoom · sectors ↔ single assets</dd>
+      <dt><kbd>Click</kbd></dt><dd>Zoom into a sector</dd>
       <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>Switch market</dd>
       <dt><kbd>Space</kbd></dt><dd>Play / pause replay</dd>
       <dt><kbd>L</kbd></dt><dd>Back to live</dd>
@@ -120,7 +119,7 @@
       <dt><kbd>R</kbd></dt><dd>Auto-orbit</dd>
       <dt><kbd>?</kbd></dt><dd>This panel</dd>
     </dl>
-    <p class="note">Idle motion (breathing, orbiting, streams) never changes size, colour or glow — only real data does.</p>
+    <p class="note">Gentle idle motion is decoration. Size, colour and glow only ever change with real data.</p>
   </div>
 </div>
 
