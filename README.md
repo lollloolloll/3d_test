@@ -57,11 +57,30 @@ balance sheet, M2, Korean rates/CPI), Yahoo Finance daily prices (weekly closes)
 Rules: weekly values between quarterly releases are interpolated and shown with **~**; after the latest Z.1 quarter
 the last value is held (stocks: scaled by the S&P 500) and also marked **~**; flows for unpublished quarters stay
 empty. Gold = price × WGC above-ground stock (back-cast by mine supply), bitcoin = price × supply from the halving
-schedule: both estimates. Korean pool sizes need a Bank of Korea ECOS key (not wired yet), so KOSPI shows as a price only.
+schedule: both estimates.
 
 ```bash
 python tools/build_money.py      # -> web/money/data.json (~0.4 MB, ~20 s; Z.1 zip cached for 7 days in data/)
 ```
+
+**Korea view** (`?r=kr`, the *US | Korea* switch at the top right) is built from the Bank of Korea's ECOS API and
+needs a free key from <https://ecos.bok.or.kr> (Open API → 인증키 신청). Put it in the environment, never in a file
+in the repo:
+
+```bash
+setx ECOS_API_KEY "<your key>"   # Windows, once; open a new terminal afterwards
+python tools/build_money.py      # also writes web/money/data_kr.json
+```
+
+| Korea view | ECOS source |
+|---|---|
+| Deposits (banks & non-banks), Korean bonds (all issuers) | flow of funds 281Y002 (quarterly, 2008 Q4 on); 2006–2008 spliced from the older 281Y007 basis and marked **~** |
+| Housing (all Korea) | 291Y524 market value of all dwellings (annual, interpolated **~**) |
+| Listed stocks | 901Y014 KOSPI + KOSDAQ market cap (month-end; KOSPI-scaled in between **~**) |
+| Streams | 281Y001 transactions: households → deposits / bonds, new household loans, foreign → bonds, BoK → bonds (quarterly); 901Y055 KRX net buying by individuals, foreigners, institutions (monthly). KRX net buying nets to ~0 across groups: it shows *who* buys, not new money |
+| Drivers | BoK base rate (722Y001), KTB 10y (721Y001), CPI (901Y009), USD/KRW, KOSPI |
+
+Without the key the Korea switch is dimmed and nothing Korean is estimated or invented.
 
 Keys: none needed. Space plays/pauses, ←/→ steps a week, Shift+←/→ jumps between big moves.
 

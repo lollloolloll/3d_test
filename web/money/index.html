@@ -28,13 +28,13 @@
 <header id="top">
   <div class="brand">
     <div class="wordmark">MONEY&nbsp;MAP</div>
-    <div class="tagline">Where money sits and where it moves · US$ · <span id="span"></span></div>
+    <div class="tagline">Where money sits and where it moves · <span id="cur">US$</span> · <span id="span"></span></div>
   </div>
   <div id="when">
     <div class="d" id="wDate">—</div>
     <div class="q"><span id="wQuarter">—</span><span id="wEst" class="est" hidden>includes estimates</span></div>
   </div>
-  <nav class="links"><a href="../" class="btn">Market organism ↗</a><button id="helpBtn" class="btn icon" aria-label="How to read">?</button></nav>
+  <nav class="links"><div class="seg" role="group" aria-label="Region"><a id="rUS" href="./">US</a><a id="rKR" href="./?r=kr">Korea</a></div><a href="../" class="btn">Market organism ↗</a><button id="helpBtn" class="btn icon" aria-label="How to read">?</button></nav>
 </header>
 
 <section id="side" class="panel" aria-label="This period">
@@ -82,6 +82,7 @@
     <p><b>Streams</b> are money that actually moved, measured by the Federal Reserve's Financial Accounts (Z.1): net purchases by US households, foreign investors and the Fed. Cyan flows into a pool; amber flows out of it. Width = dollars per quarter. Stablecoin minting is measured weekly.</p>
     <p><b>Thin lines</b> show which prices moved together (blue) or opposite (orange) over the last 13 weeks. Moving together is not cause.</p>
     <p><b>The timeline</b> stacks every pool's size over 20 years; the lines under it are the drivers (inflation, rates, oil, dollar). Dots mark the biggest 4-week moves.</p>
+    <p><b>Korea view</b> (top right): deposits, bonds, housing and listed stocks in won, from the Bank of Korea (ECOS). Streams are the BoK flow of funds (households, foreign investors, the BoK, new household loans) and KRX monthly net buying by individuals, foreigners and institutions; one group's net buying is another's net selling.</p>
     <p class="note">A ball grows either because its price rose or because money flowed in. The streams separate the two. Values between quarterly releases, the gold stock and the bitcoin supply are estimates and are marked so. Korean pool sizes need a Bank of Korea ECOS key.</p>
     <dl class="keys">
       <dt><kbd>Space</kbd></dt><dd>Play / pause</dd>

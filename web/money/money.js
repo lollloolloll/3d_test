@@ -29,14 +29,23 @@ const GROUPS = [
   { id: 'crypto', label: 'CRYPTO', x: 66, hue: '#ff8ad8' },
 ];
 const GH = Object.fromEntries(GROUPS.map((g) => [g.id, g]));
-const HUBPOS = { fed: [-46, 34, -50], households: [2, 38, -56], foreign: [44, 34, -50] };
+const REGION = new URLSearchParams(location.search).get('r') === 'kr' ? 'kr' : 'us';
+const HUBPOS = REGION === 'kr'
+  ? { bok: [-52, 32, -48], households: [-15, 38, -56], inst: [17, 34, -54], foreign: [50, 32, -48] }
+  : { fed: [-46, 34, -50], households: [2, 38, -56], foreign: [44, 34, -50] };
 const SHORT = { cpi: 'Inflation', ff: 'Fed rate', y10: '10-year yield', credit: 'Credit stress', oilp: 'Oil price', dxy: 'Dollar strength', fedbs: 'Fed balance sheet', rrp: 'Fed reverse repo', m2: 'Money supply growth', usdkrw: 'USD/KRW', krrate: 'Korea rate', kr10: 'Korea 10-year', krcpi: 'Korea inflation', kospi: 'KOSPI' };
 const laneName = (l) => SHORT[l.id] || l.label;
 const flowName = (f) => f.label.replace(/ \(.*\)/, '').replace('money market funds', 'money funds').replace('Foreigners', 'Foreign');
 const C_IN = new THREE.Color('#5ee4ff'), C_OUT = new THREE.Color('#ffad5c'), C_TIE = new THREE.Color('#6fa8ff'), C_OPP = new THREE.Color('#ff9a5c');
 
-const fmtB = (b) => (b == null || !isFinite(b) ? '—' : Math.abs(b) >= 1000 ? `$${(b / 1000).toFixed(Math.abs(b) >= 10000 ? 1 : 2)}T` : `$${Math.round(b)}B`);
-const fmtSB = (b) => (b == null || !isFinite(b) ? '—' : `${b >= 0 ? '+' : '−'}${fmtB(Math.abs(b)).replace('$', '$')}`);
+// amounts are in billions of the region's currency: US $ → $1.23T / $456B; Korea ₩ → ₩2,585조 / ₩4,560억
+const fmtB = (b) => {
+  if (b == null || !isFinite(b)) return '—';
+  const a = Math.abs(b);
+  if (REGION === 'kr') return a >= 1000 ? `₩${(b / 1000).toLocaleString('en-US', { maximumFractionDigits: a >= 100000 ? 0 : 1 })}조` : `₩${Math.round(b * 10).toLocaleString('en-US')}억`;
+  return a >= 1000 ? `$${(b / 1000).toFixed(a >= 10000 ? 1 : 2)}T` : `$${Math.round(b)}B`;
+};
+const fmtSB = (b) => (b == null || !isFinite(b) ? '—' : `${b >= 0 ? '+' : '−'}${fmtB(Math.abs(b))}`);
 const fmtPct = (p) => (p == null || !isFinite(p) ? '—' : `${p >= 0 ? '+' : '−'}${Math.abs(p).toFixed(Math.abs(p) >= 10 ? 0 : 1)}%`);
 const fmtDate = (t) => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const quarterOf = (t) => { const d = new Date(t); return `${d.getFullYear()} Q${Math.floor(d.getMonth() / 3) + 1}`; };
@@ -85,7 +94,7 @@ const rim = new THREE.DirectionalLight(0x88aaff, 0.8); rim.position.set(80, 40, 
 }
 
 // ------------------------------------------------------------------ state
-const S = { D: null, T: 0, playing: !REDUCED, speed: 4.345, lastI: -1, nodes: {}, flows: [], links: [], lanesSet: 'us', userTouched: false, hover: null };
+const S = { D: null, T: 0, playing: !REDUCED, speed: 4.345, lastI: -1, nodes: {}, flows: [], links: [], lanesSet: REGION, userTouched: false, hover: null };
 let hubs = {};
 
 // ------------------------------------------------------------------ build scene from data
@@ -157,11 +166,11 @@ function makeFlows() {
   }
 }
 function buildFlowMesh(F) {
-  const to = S.nodes[F.f.to], fromHub = hubs[F.f.from], fromNode = S.nodes[F.f.from];
-  if (!to) return;
-  const b = new THREE.Vector3(to.x, to.mesh.position.y + to.r * 0.9, to.z);
+  const to = S.nodes[F.f.to], toHub = hubs[F.f.to], fromHub = hubs[F.f.from], fromNode = S.nodes[F.f.from];
+  if (!to && !toHub) return;
+  const b = to ? new THREE.Vector3(to.x, to.mesh.position.y + to.r * 0.9, to.z) : toHub.pos.clone();
   const a = fromHub ? fromHub.pos.clone() : new THREE.Vector3(fromNode.x, fromNode.mesh.position.y + fromNode.r, fromNode.z);
-  const curve = curveBetween(a, b, fromHub ? 6 : 26, (F.k - 0.5) * 7);
+  const curve = curveBetween(a, b, fromHub || toHub ? 6 : 26, (F.k - 0.5) * 7);
   if (F.mesh) { scene.remove(F.mesh); F.mesh.geometry.dispose(); }
   const TS = 72, RS = 10;
   const geo = new THREE.TubeGeometry(curve, TS, 1, RS, false);
@@ -170,7 +179,7 @@ function buildFlowMesh(F) {
   geo.setAttribute('aCtr', new THREE.BufferAttribute(ctr, 3));
   const mat = F.mat || (F.mat = flowMaterial());
   mat.uniforms.uLen.value = curve.getLength();
-  F.mesh = new THREE.Mesh(geo, mat); F.mesh.renderOrder = 2; F.anchorR = to.r; F.anchorFromR = fromNode?.r;
+  F.mesh = new THREE.Mesh(geo, mat); F.mesh.renderOrder = 2; F.anchorR = to ? to.r : 0; F.anchorFromR = fromNode?.r;
   scene.add(F.mesh);
 }
 function makeLinks() {
@@ -192,7 +201,7 @@ function placeLink(K) {
 
 // ------------------------------------------------------------------ per-frame data
 const val = (arr, T) => { const i = Math.floor(T), f = T - i, a = arr[i], b = arr[Math.min(i + 1, arr.length - 1)]; if (a == null) return null; if (b == null) return a; return lerp(a, b, f); };
-const radiusFor = (v) => (v == null ? 0 : Math.max(0.7, 0.042 * Math.sqrt(Math.max(v, 0))));
+const radiusFor = (v) => (v == null ? 0 : Math.max(0.7, (S.D?.meta.rscale || 0.042) * Math.sqrt(Math.max(v, 0))));
 
 function applyFrame(T) {
   const D = S.D, i = Math.floor(T);
@@ -213,10 +222,11 @@ function applyFrame(T) {
     F.mesh.visible = vis && layerOn('flows');
     if (!vis) continue;
     const q = Math.abs(w);                                              // $bn per quarter
-    F.mat.uniforms.uW.value = 0.18 + 0.075 * Math.sqrt(q);
+    const qs = Math.sqrt(q) * (S.D.meta.rscale || 0.042) / 0.042;      // same currency scaling as the balls
+    F.mat.uniforms.uW.value = 0.18 + 0.075 * qs;
     F.mat.uniforms.uDir.value = w > 0 ? 1 : -1;
     F.mat.uniforms.uC.value.copy(w > 0 ? C_IN : C_OUT);
-    F.mat.uniforms.uA.value = clamp(0.35 + Math.sqrt(q) / 40, 0.35, 1.0);
+    F.mat.uniforms.uA.value = clamp(0.35 + qs / 40, 0.35, 1.0);
   }
   for (const K of S.links) {
     if (K.built !== S.layoutGen || relayout) { placeLink(K); K.built = S.layoutGen; }
@@ -241,9 +251,10 @@ function updateHud(i) {
   const rows = D.flows.map((f) => ({ f, q: f.q[i] }));
   const mx = Math.max(1, ...rows.map((r) => Math.abs(r.q ?? 0)));
   rows.sort((a, b) => Math.abs(b.q ?? -1) - Math.abs(a.q ?? -1));
-  const published = rows.some((r) => r.q != null && r.f.id !== 'cash_stable');
+  const published = rows.some((r) => r.q != null && r.f.per === 'q');
+  const fastNote = D.flows.some((f) => f.per !== 'q') ? (REGION === 'kr' ? ' KRX investor flows are monthly (shown as the last 13 weeks).' : ' Stablecoin minting is measured weekly (shown as the last 13 weeks).') : '';
   $('flowQ').textContent = published ? `${quarterOf(t)} · per quarter` : `${quarterOf(t)} · not published yet`;
-  $('flowRows').innerHTML = (published ? '' : `<div class="empty">The Fed's Financial Accounts for this quarter are not out yet (latest: ${esc(D.meta.z1_latest)}). Stablecoin minting is measured weekly (shown as the last 13 weeks).</div>`) +
+  $('flowRows').innerHTML = (published ? '' : `<div class="empty">${esc(D.meta.flows_name || 'Official flow data')} for this quarter is not out yet (latest: ${esc(D.meta.z1_latest)}).${fastNote}</div>`) +
     rows.map(({ f, q }) => {
       if (q == null) return `<div class="fr none" title="${esc(f.src)}"><span class="n">${esc(flowName(f))}</span><span class="bar"></span><span class="v">—</span></div>`;
       const w = Math.abs(q) / mx * 50, pos = q >= 0;
@@ -259,7 +270,8 @@ function updateHud(i) {
   $('tieRows').innerHTML = cs.map((x) => `<div class="cr"><span class="n">${esc(LBL[x.L.a])} ↔ ${esc(LBL[x.L.b])}</span><span class="v" style="color:${x.c > 0 ? 'var(--tie)' : 'var(--opp)'}">${x.c > 0 ? 'together' : 'opposite'} ${Math.abs(x.c).toFixed(2)}</span></div>`).join('') || '<div class="empty">Nothing strongly linked right now.</div>';
   // drivers
   const lanes = D.lanes.filter((l) => l.group === S.lanesSet || (S.lanesSet === 'us' && l.group === 'us'));
-  $('drv').innerHTML = D.lanes.filter((l) => ['cpi', 'ff', 'y10', 'credit', 'oilp', 'dxy', 'usdkrw', 'krrate'].includes(l.id))
+  const DRV = REGION === 'kr' ? ['krrate', 'kr10', 'krcpi', 'usdkrw', 'kospi', 'ff', 'y10', 'oilp'] : ['cpi', 'ff', 'y10', 'credit', 'oilp', 'dxy', 'usdkrw', 'krrate'];
+  $('drv').innerHTML = DRV.map((id) => D.lanes.find((l) => l.id === id)).filter(Boolean)
     .map((l) => { const v = l.v[i], v1 = yearAgo(l.v, i); const d = v != null && v1 != null ? v - v1 : null;
       return `<dt title="${esc(l.label)}">${esc(laneName(l))}</dt><dd>${v == null ? '—' : fmtLane(l, v)} <span class="mute">${d == null ? '' : (d >= 0 ? '▲' : '▼') + fmtLane(l, Math.abs(d), true)}</span></dd>`; }).join('');
   // pool labels content
@@ -267,9 +279,9 @@ function updateHud(i) {
     if (!n.p) continue;
     let html;
     if (n.isPrice) {
-      const lane = n.p.id === 'oil' ? D.lanes.find((l) => l.id === 'oilp') : D.lanes.find((l) => l.id === 'kospi');
+      const lane = D.lanes.find((l) => l.id === (n.p.lane || (n.p.id === 'oil' ? 'oilp' : 'kospi')));
       const v = lane?.v[i], v1 = lane ? yearAgo(lane.v, i) : null, d = v != null && v1 ? (v / v1 - 1) * 100 : null;
-      html = `<div class="k">${esc(n.p.label)}</div><div class="v">${v == null ? '—' : (n.p.id === 'oil' ? '$' + v.toFixed(0) : Math.round(v).toLocaleString())}<small class="${d == null ? 'mute' : d >= 0 ? 'up' : 'dn'}">${fmtPct(d)}</small></div>`;
+      html = `<div class="k">${esc(n.p.label)}</div><div class="v">${v == null ? '—' : fmtLane(lane, v)}<small class="${d == null ? 'mute' : d >= 0 ? 'up' : 'dn'}">${fmtPct(d)}</small></div>`;
     } else {
       const v = n.p.v[i], v1 = yearAgo(n.p.v, i), d = v != null && v1 ? (v / v1 - 1) * 100 : null, est = n.p.est && n.p.est[i];
       html = `<div class="k">${esc(n.p.label)}</div><div class="v">${est ? '<span class="e" title="estimate">~</span>' : ''}${fmtB(v)}<small class="${d == null ? 'mute' : d >= 0 ? 'up' : 'dn'}">${fmtPct(d)}</small></div>`;
@@ -280,12 +292,16 @@ function updateHud(i) {
   const ev = D.events.find((e) => Math.abs(e.t - t) < 3.5 * 86400e3);
   if (ev && S.playing && S.lastEv !== ev.t) { S.lastEv = ev.t; showChapter(ev); }
 }
-const fmtLane = (l, v, delta = false) => (l.unit === '%' || l.unit === 'pp' ? `${v.toFixed(2)}${delta ? 'pp' : '%'}` : l.unit === '$' ? `$${v.toFixed(0)}` : l.unit === '₩' ? `₩${Math.round(v).toLocaleString()}` : l.unit === '$T' ? `$${v.toFixed(2)}T` : v.toFixed(1));
+const big = (v) => (Math.abs(v) >= 1000 ? Math.round(v).toLocaleString('en-US') : null);
+const fmtLane = (l, v, delta = false) => (l.unit === '%' || l.unit === 'pp' ? `${v.toFixed(2)}${delta ? 'pp' : '%'}`
+  : l.unit === '$' ? `$${big(v) ?? v.toFixed(0)}` : l.unit === '₩' ? `₩${Math.round(v).toLocaleString('en-US')}`
+  : l.unit === '$T' ? `$${v.toFixed(2)}T` : big(v) ?? v.toFixed(1));
 let chapTimer = 0;
 function showChapter(ev) {
   const el = $('chapter');
   const mv = ev.moves.map((m) => `${esc(m.k)} <b class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</b>`).join(' · ');
-  const rt = ev.rates?.ff ? ` · Fed rate ${ev.rates.ff >= 0 ? '+' : '−'}${Math.abs(ev.rates.ff).toFixed(2)}pp` : '';
+  const RL = S.D.meta.rate_labels || { ff: 'Fed rate', y10: '10y yield' };
+  const rt = ev.rates?.ff ? ` · ${esc(RL.ff)} ${ev.rates.ff >= 0 ? '+' : '−'}${Math.abs(ev.rates.ff).toFixed(2)}pp` : '';
   el.innerHTML = `<div class="t">Big move · 4 weeks to ${fmtDate(ev.t)}</div>${mv}${rt}`;
   el.hidden = false; clearTimeout(chapTimer); chapTimer = setTimeout(() => { el.hidden = true; }, 4200);
 }
@@ -373,7 +389,7 @@ tl.addEventListener('pointermove', (e) => {
   const r = tl.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
   const D = S.D, n = D.weeks.length;
   const ev = D.events.find((ev) => { const k = D.weeks.findIndex((t) => t >= ev.t); return Math.abs(tlGeom.x0 + (k / (n - 1)) * tlGeom.w - x) < 6 && y < 16; });
-  if (ev) showTip(`<h4>Big move · ${fmtDate(ev.t)}</h4><div class="sub">4-week change, largest vs each series' own history</div><table>${ev.moves.map((m) => `<tr><td>${esc(m.k)}</td><td class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</td></tr>`).join('')}<tr><td>Fed rate</td><td>${ev.rates?.ff == null ? '—' : (ev.rates.ff >= 0 ? '+' : '−') + Math.abs(ev.rates.ff).toFixed(2) + 'pp'}</td></tr><tr><td>10y yield</td><td>${ev.rates?.y10 == null ? '—' : (ev.rates.y10 >= 0 ? '+' : '−') + Math.abs(ev.rates.y10).toFixed(2) + 'pp'}</td></tr></table>`, e.clientX, e.clientY - 150);
+  if (ev) showTip(`<h4>Big move · ${fmtDate(ev.t)}</h4><div class="sub">4-week change, largest vs each series' own history</div><table>${ev.moves.map((m) => `<tr><td>${esc(m.k)}</td><td class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</td></tr>`).join('')}<tr><td>${esc((D.meta.rate_labels || {}).ff || 'Fed rate')}</td><td>${ev.rates?.ff == null ? '—' : (ev.rates.ff >= 0 ? '+' : '−') + Math.abs(ev.rates.ff).toFixed(2) + 'pp'}</td></tr><tr><td>${esc((D.meta.rate_labels || {}).y10 || '10y yield')}</td><td>${ev.rates?.y10 == null ? '—' : (ev.rates.y10 >= 0 ? '+' : '−') + Math.abs(ev.rates.y10).toFixed(2) + 'pp'}</td></tr></table>`, e.clientX, e.clientY - 150);
   else hideTip();
 });
 tl.addEventListener('pointerup', () => { drag = false; });
@@ -421,8 +437,10 @@ function poolTip(n) {
   const v = p.v[i], v1 = yearAgo(p.v, i);
   const rows = n.isPrice ? [] : [['Held', fmtB(v)], ['vs 1 year ago', v != null && v1 ? `${fmtSB(v - v1)} (${fmtPct((v / v1 - 1) * 100)})` : '—']];
   for (const x of ins) rows.push([x.f.label, x.q == null ? 'not published' : `<span class="${x.q >= 0 ? 'up' : 'dn'}">${fmtSB(x.q)}</span> / qtr`]);
-  if (!n.isPrice && v != null && v1 && ins.length) {
-    const flow4 = ins.reduce((s, x) => { let a = 0; for (let k = i - 51; k <= i; k++) { const w = x.f.w[k]; if (w != null) a += w * (x.f.from === p.id ? -1 : 1); } return s + a; }, 0);
+  const net = ins.filter((x) => x.f.per !== 'm' && !hubs[x.f.to]);   // investor-type trades and loans to a hub are not money in/out of the pool
+  if (ins.some((x) => x.f.per === 'm')) rows.push(['', '<span class="mute">KRX: one group\'s net buying is another\'s net selling — this shows who buys, not new money</span>']);
+  if (!n.isPrice && v != null && v1 && net.length) {
+    const flow4 = net.reduce((s, x) => { let a = 0; for (let k = i - 51; k <= i; k++) { const w = x.f.w[k]; if (w != null) a += w * (x.f.from === p.id ? -1 : 1); } return s + a; }, 0);
     rows.push(['Last 12 months: money in', `<span class="${flow4 >= 0 ? 'up' : 'dn'}">${fmtSB(flow4)}</span>`]);
     rows.push(['Last 12 months: price & other', fmtSB(v - v1 - flow4)]);
   }
@@ -496,17 +514,24 @@ function frame(now) {
 // ------------------------------------------------------------------ boot
 async function main() {
   boot('Loading 20 years of data', 0.2);
-  const r = await fetch('data.json', { cache: 'no-cache' });
-  if (!r.ok) { boot('data.json missing — run python tools/build_money.py', 0.2); return; }
+  for (const [id, on] of [['rUS', REGION === 'us'], ['rKR', REGION === 'kr']]) $(id).classList.toggle('on', on);
+  $('lUS').classList.toggle('on', REGION === 'us'); $('lKR').classList.toggle('on', REGION === 'kr');
+  const r = await fetch(REGION === 'kr' ? 'data_kr.json' : 'data.json', { cache: 'no-cache' });
+  if (!r.ok) {
+    boot(REGION === 'kr' ? 'Korea view not built yet: it needs a Bank of Korea ECOS key (ECOS_API_KEY) and python tools/build_money.py' : 'data.json missing — run python tools/build_money.py', 0.2);
+    return;
+  }
+  if (REGION === 'us') fetch('data_kr.json', { method: 'HEAD', cache: 'no-cache' }).then((x) => { if (!x.ok) { $('rKR').classList.add('off'); $('rKR').title = 'Korea view needs a Bank of Korea ECOS key'; } }).catch(() => {});
   S.D = await r.json();
   boot('Building the map', 0.7);
   const D = S.D;
   $('span').textContent = `${new Date(D.meta.from).getFullYear()}–${new Date(D.meta.to).getFullYear()}`;
+  $('cur').textContent = REGION === 'kr' ? 'Korea · ₩ (조 = trillion won)' : 'US · US$';
+  if (REGION === 'kr') document.title = 'Money Map · Korea';
   // per-quarter amount for every flow: Z.1 rates are already quarterly (w·13); weekly-measured flows sum their last 13 weeks
   for (const f of D.flows) {
-    const weekly = /weekly/.test(f.note || '');
-    f.weekly = weekly;
-    f.q = f.w.map((w, k) => { if (w == null) return null; if (!weekly) return w * 13; let a = 0; for (let j = Math.max(0, k - 12); j <= k; j++) a += f.w[j] || 0; return a; });
+    f.per ||= /weekly/.test(f.note || '') ? 'w' : 'q';
+    f.q = f.w.map((w, k) => { if (w == null) return null; if (f.per === 'q') return w * 13; let a = 0; for (let j = Math.max(0, k - 12); j <= k; j++) a += f.w[j] || 0; return a; });
   }
   makeNodes(); makeFlows(); makeLinks();
   resize();
