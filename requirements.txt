@@ -6,3 +6,4 @@ httpx>=0.27
 numpy>=1.26
 pandas>=2.2
 yfinance>=0.2.50
+pytrends>=4.9

@@ -34,7 +34,7 @@ const HUBPOS = REGION === 'kr'
   ? { bok: [-52, 32, -48], households: [-15, 38, -56], inst: [17, 34, -54], foreign: [50, 32, -48] }
   : { fed: [-46, 34, -50], households: [2, 38, -56], foreign: [44, 34, -50] };
 const SHORT = { cpi: 'Inflation', ff: 'Fed rate', y10: '10-year yield', credit: 'Credit stress', oilp: 'Oil price', dxy: 'Dollar strength', fedbs: 'Fed balance sheet', rrp: 'Fed reverse repo', m2: 'Money supply growth', usdkrw: 'USD/KRW', krrate: 'Korea rate', kr10: 'Korea 10-year', krcpi: 'Korea inflation', kospi: 'KOSPI' };
-const laneName = (l) => SHORT[l.id] || l.label;
+const laneName = (l) => (l.id === 'att' ? l.label : SHORT[l.id] || l.label);
 const flowName = (f) => f.label.replace(/ \(.*\)/, '').replace('money market funds', 'money funds').replace('Foreigners', 'Foreign');
 const C_IN = new THREE.Color('#5ee4ff'), C_OUT = new THREE.Color('#ffad5c'), C_TIE = new THREE.Color('#6fa8ff'), C_OPP = new THREE.Color('#ff9a5c');
 
@@ -96,6 +96,7 @@ const rim = new THREE.DirectionalLight(0x88aaff, 0.8); rim.position.set(80, 40, 
 // ------------------------------------------------------------------ state
 const S = { D: null, T: 0, playing: !REDUCED, speed: 4.345, lastI: -1, nodes: {}, flows: [], links: [], lanesSet: REGION, userTouched: false, hover: null };
 let hubs = {};
+const beams = {};                  // attention pillars, one per money group
 
 // ------------------------------------------------------------------ build scene from data
 function poolMaterial(hue) {
@@ -158,6 +159,33 @@ function curveBetween(a, b, lift, side = 0) {
   const mid = a.clone().lerp(b, 0.5); mid.y += lift; mid.x += side;
   return new THREE.QuadraticBezierCurve3(a, mid, b);
 }
+// Attention pillars: behind each group, height = Google search interest (0-100) of the group's most-searched keyword
+// that month. Relative interest, not dollars; it never changes the balls.
+function beamMaterial(hue) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    uniforms: { uC: { value: new THREE.Color(hue) }, uA: { value: 0.0 } },
+    vertexShader: 'varying float vY; varying vec3 vN; varying vec3 vV; void main(){ vY = position.y + 0.5; vec4 mv = modelViewMatrix*vec4(position,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }',
+    fragmentShader: 'uniform vec3 uC; uniform float uA; varying float vY; varying vec3 vN; varying vec3 vV; void main(){ float edge = 1.0 - abs(dot(vN, vV)); float a = uA * (0.25 + 0.75 * edge) * (1.0 - smoothstep(0.75, 1.0, vY)) * (0.55 + 0.45 * (1.0 - vY)); gl_FragColor = vec4(mix(uC, vec3(1.0), 0.25) * 1.2, a); }',
+  });
+}
+function makeBeams() {
+  if (!S.A) return;
+  const root = $('labels');
+  for (const g of GROUPS) {
+    const ser = S.A.series.filter((x) => x.src === 'web' && x.group === g.id);
+    if (!ser.length) continue;
+    const zs = Object.values(S.nodes).filter((n) => n.p && n.g.id === g.id).map((n) => n.z);
+    const z = (zs.length ? Math.min(...zs) : 0) - 15;
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 1, 32, 1, true), beamMaterial(g.hue));
+    mesh.position.set(g.x, 0.5, z); mesh.renderOrder = 3; scene.add(mesh);
+    const disc = new THREE.Mesh(new THREE.RingGeometry(2.4, 3.4, 40), new THREE.MeshBasicMaterial({ color: g.hue, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }));
+    disc.rotation.x = -Math.PI / 2; disc.position.set(g.x, 0.05, z); scene.add(disc);
+    const lab = document.createElement('div'); lab.className = 'al'; lab.style.setProperty('--hue', g.hue); root.appendChild(lab);
+    beams[g.id] = { g, ser, mesh, disc, lab, x: g.x, z, h: 1 };
+  }
+}
+
 function makeFlows() {
   const D = S.D, perTarget = {};
   for (const f of D.flows) {
@@ -288,6 +316,7 @@ function updateHud(i) {
     }
     if (n.lab._h !== html) { n.lab.innerHTML = html; n.lab._h = html; n.lab._w = 0; n.lab._h2 = 0; }
   }
+  updateAttention(i);
   // chapter card when passing a big move
   const ev = D.events.find((e) => Math.abs(e.t - t) < 3.5 * 86400e3);
   if (ev && S.playing && S.lastEv !== ev.t) { S.lastEv = ev.t; showChapter(ev); }
@@ -295,14 +324,51 @@ function updateHud(i) {
 const big = (v) => (Math.abs(v) >= 1000 ? Math.round(v).toLocaleString('en-US') : null);
 const fmtLane = (l, v, delta = false) => (l.unit === '%' || l.unit === 'pp' ? `${v.toFixed(2)}${delta ? 'pp' : '%'}`
   : l.unit === '$' ? `$${big(v) ?? v.toFixed(0)}` : l.unit === '₩' ? `₩${Math.round(v).toLocaleString('en-US')}`
-  : l.unit === '$T' ? `$${v.toFixed(2)}T` : big(v) ?? v.toFixed(1));
+  : l.unit === '$T' ? `$${v.toFixed(2)}T` : l.unit === 'idx' ? String(Math.round(v)) : big(v) ?? v.toFixed(1));
+function attAt(x, i) { const v = x.v[i]; return v == null ? null : v; }
+function attYearAgo(x, i) { return i >= 52 ? x.v[i - 52] : null; }
+const SRC_NAME = { web: 'search', youtube: 'YouTube', wiki: 'Wikipedia', news: 'news' };
+function fmtAtt(x, v) { return v == null ? '—' : x.unit === 'views' ? (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v))) : x.unit === '% of news' ? `${v.toFixed(2)}%` : String(Math.round(v)); }
+function updateAttention(i) {
+  if (!S.A) { $('attSec').hidden = true; return; }
+  for (const b of Object.values(beams)) {
+    let top = null, tv = -1;
+    for (const x of b.ser) { const v = attAt(x, i); if (v != null && v > tv) { tv = v; top = x; } }
+    b.top = top; b.v = top ? tv : null;
+    b.h = top ? 1 + tv * 0.34 : 0;
+    b.mesh.visible = b.disc.visible = !!top && layerOn('att');
+    if (top) { b.mesh.scale.set(1, b.h, 1); b.mesh.position.y = b.h / 2; b.mesh.material.uniforms.uA.value = 0.18 + tv / 100 * 0.5; }
+    const y1 = top ? attYearAgo(top, i) : null;
+    const html = top ? `<div class="k">${esc(SRC_NAME.web)} · “${esc(top.kw)}”</div><div class="v">${Math.round(tv)}${y1 ? `<small class="${tv >= y1 ? 'up' : 'dn'}">${fmtPct((tv / y1 - 1) * 100)}</small>` : ''}</div>` : '';
+    if (b.lab._h !== html) { b.lab.innerHTML = html; b.lab._h = html; b.lab._w = 0; b.lab._h2 = 0; }
+  }
+  // side panel: the most-watched topics this month (search + YouTube), and how attention lines up with money
+  const rows = S.A.series.filter((x) => x.src === 'web' || x.src === 'youtube').map((x) => ({ x, v: attAt(x, i), y1: attYearAgo(x, i) }))
+    .filter((r) => r.v != null).sort((a, b) => b.v - a.v).slice(0, 6);
+  $('attRows').innerHTML = rows.map(({ x, v, y1 }) => `<div class="cr" title="${esc(x.note)}"><span class="n">“${esc(x.kw)}” <span class="mute">${SRC_NAME[x.src]}</span></span><span class="v">${Math.round(v)} <span class="${y1 == null ? 'mute' : v >= y1 ? 'up' : 'dn'}">${y1 ? fmtPct((v / y1 - 1) * 100) : ''}</span></span></div>`).join('')
+    || '<div class="empty">No attention data for this month.</div>';
+  const news = S.A.series.filter((x) => x.src === 'news').map((x) => ({ x, v: attAt(x, i) })).filter((r) => r.v != null).sort((a, b) => b.v - a.v).slice(0, 3);
+  const wiki = S.A.series.filter((x) => x.src === 'wiki').map((x) => ({ x, v: attAt(x, i) })).filter((r) => r.v != null).sort((a, b) => b.v - a.v).slice(0, 3);
+  $('attMore').innerHTML = [...news.map(({ x, v }) => `<div class="cr" title="${esc(x.note)}"><span class="n">“${esc(x.kw)}” <span class="mute">news</span></span><span class="v">${fmtAtt(x, v)}</span></div>`),
+    ...wiki.map(({ x, v }) => `<div class="cr" title="${esc(x.note)}"><span class="n">${esc(x.kw)} <span class="mute">Wikipedia</span></span><span class="v">${fmtAtt(x, v)} views</span></div>`)].join('');
+}
+function renderPairs() {
+  if (!S.A) return;
+  const lagTxt = (k) => (k === 0 ? 'same month' : k > 0 ? `searches lead by ${k} mo` : `searches follow by ${-k} mo`);
+  $('llRows').innerHTML = S.A.pairs.map((p) => p.weak
+    ? `<div class="cr"><span class="n">“${esc(p.kw)}” ↔ ${esc(p.target)}</span><span class="v mute">no clear link</span></div>`
+    : `<div class="cr" title="search surge vs ${esc(p.target)} (${p.kind === 'ret' ? 'monthly return' : p.kind === 'flow' ? 'monthly net amount' : 'monthly change'}), ${p.n} months"><span class="n">“${esc(p.kw)}” ↔ ${esc(p.target)}</span><span class="v" style="color:${p.r > 0 ? 'var(--tie)' : 'var(--opp)'}">${p.r > 0 ? 'together' : 'opposite'} ${Math.abs(p.r).toFixed(2)} <span class="mute">${lagTxt(p.k)}</span></span></div>`).join('')
+    || '<div class="empty">—</div>';
+}
 let chapTimer = 0;
 function showChapter(ev) {
   const el = $('chapter');
   const mv = ev.moves.map((m) => `${esc(m.k)} <b class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</b>`).join(' · ');
   const RL = S.D.meta.rate_labels || { ff: 'Fed rate', y10: '10y yield' };
   const rt = ev.rates?.ff ? ` · ${esc(RL.ff)} ${ev.rates.ff >= 0 ? '+' : '−'}${Math.abs(ev.rates.ff).toFixed(2)}pp` : '';
-  el.innerHTML = `<div class="t">Big move · 4 weeks to ${fmtDate(ev.t)}</div>${mv}${rt}`;
+  const sp = S.A?.spikes.find((x) => x.t === ev.t);
+  const spk = sp ? `<div class="s">Search spike that month: “${esc(sp.kw)}” ×${sp.x} its usual level</div>` : '';
+  el.innerHTML = `<div class="t">Big move · 4 weeks to ${fmtDate(ev.t)}</div>${mv}${rt}${spk}`;
   el.hidden = false; clearTimeout(chapTimer); chapTimer = setTimeout(() => { el.hidden = true; }, 4200);
 }
 
@@ -354,8 +420,20 @@ function renderTimelineBase(W, H, dpr) {
     ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.arc(X(k), y0 + 2, 2.4, 0, 7); ctx.fill();
   }
   // lanes
-  const sel = S.lanesSet === 'us' ? ['cpi', 'ff', 'y10', 'credit', 'oilp', 'dxy'] : ['krrate', 'kr10', 'krcpi', 'usdkrw', 'kospi', 'ff'];
-  const lanes = sel.slice(0, narrow ? 3 : 6).map((id) => D.lanes.find((l) => l.id === id)).filter(Boolean);
+  let lanes;
+  if (S.lanesSet === 'att' && S.A) {
+    // one line per group (incl. macro): its most-searched web keyword, busiest groups first; plus the demand lanes
+    const peak = (x) => Math.max(...x.v.filter((v) => v != null));
+    const best = {};
+    for (const x of S.A.series) if (x.src === 'web' && (!best[x.group] || peak(x) > peak(best[x.group]))) best[x.group] = x;
+    const att = Object.values(best).sort((a, b) => peak(b) - peak(a))
+      .map((x) => ({ id: 'att', label: `“${x.kw}” search`, unit: 'idx', v: x.v }));
+    const dem = (REGION === 'kr' ? ['ccsi', 'online'] : ['sent', 'retail']).map((id) => D.lanes.find((l) => l.id === id)).filter(Boolean);
+    lanes = att.slice(0, 6 - dem.length).concat(dem).slice(0, narrow ? 3 : 6);
+  } else {
+    const sel = S.lanesSet === 'us' ? ['cpi', 'ff', 'y10', 'credit', 'oilp', 'dxy'] : ['krrate', 'kr10', 'krcpi', 'usdkrw', 'kospi', 'ff'];
+    lanes = sel.slice(0, narrow ? 3 : 6).map((id) => D.lanes.find((l) => l.id === id)).filter(Boolean);
+  }
   const top = y0 + stackH + 8, lh = (H - top - 16) / lanes.length;
   const out = [];
   lanes.forEach((l, q) => {
@@ -389,7 +467,7 @@ tl.addEventListener('pointermove', (e) => {
   const r = tl.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
   const D = S.D, n = D.weeks.length;
   const ev = D.events.find((ev) => { const k = D.weeks.findIndex((t) => t >= ev.t); return Math.abs(tlGeom.x0 + (k / (n - 1)) * tlGeom.w - x) < 6 && y < 16; });
-  if (ev) showTip(`<h4>Big move · ${fmtDate(ev.t)}</h4><div class="sub">4-week change, largest vs each series' own history</div><table>${ev.moves.map((m) => `<tr><td>${esc(m.k)}</td><td class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</td></tr>`).join('')}<tr><td>${esc((D.meta.rate_labels || {}).ff || 'Fed rate')}</td><td>${ev.rates?.ff == null ? '—' : (ev.rates.ff >= 0 ? '+' : '−') + Math.abs(ev.rates.ff).toFixed(2) + 'pp'}</td></tr><tr><td>${esc((D.meta.rate_labels || {}).y10 || '10y yield')}</td><td>${ev.rates?.y10 == null ? '—' : (ev.rates.y10 >= 0 ? '+' : '−') + Math.abs(ev.rates.y10).toFixed(2) + 'pp'}</td></tr></table>`, e.clientX, e.clientY - 150);
+  if (ev) showTip(`<h4>Big move · ${fmtDate(ev.t)}</h4><div class="sub">4-week change, largest vs each series' own history</div><table>${ev.moves.map((m) => `<tr><td>${esc(m.k)}</td><td class="${m.pct >= 0 ? 'up' : 'dn'}">${fmtPct(m.pct)}</td></tr>`).join('')}<tr><td>${esc((D.meta.rate_labels || {}).ff || 'Fed rate')}</td><td>${ev.rates?.ff == null ? '—' : (ev.rates.ff >= 0 ? '+' : '−') + Math.abs(ev.rates.ff).toFixed(2) + 'pp'}</td></tr><tr><td>${esc((D.meta.rate_labels || {}).y10 || '10y yield')}</td><td>${ev.rates?.y10 == null ? '—' : (ev.rates.y10 >= 0 ? '+' : '−') + Math.abs(ev.rates.y10).toFixed(2) + 'pp'}</td></tr>${(() => { const sp = S.A?.spikes.find((x) => x.t === ev.t); return sp ? `<tr><td>Search spike</td><td>“${esc(sp.kw)}” ×${sp.x}</td></tr>` : ''; })()}</table>`, e.clientX, e.clientY - 150);
   else hideTip();
 });
 tl.addEventListener('pointerup', () => { drag = false; });
@@ -409,8 +487,8 @@ function jumpEvent(dir) {
   S.T = Math.max(0, D.weeks.findIndex((w) => w >= e.t)); S.playing = false; updatePlay(); S.lastEv = null; showChapter(e); S.lastEv = e.t;
 }
 $('bPrev').onclick = () => jumpEvent(-1); $('bNext').onclick = () => jumpEvent(1);
-$('lUS').onclick = () => { S.lanesSet = 'us'; $('lUS').classList.add('on'); $('lKR').classList.remove('on'); tlGeom = null; };
-$('lKR').onclick = () => { S.lanesSet = 'kr'; $('lKR').classList.add('on'); $('lUS').classList.remove('on'); tlGeom = null; };
+const setLanes = (k) => { S.lanesSet = k; for (const [id, kk] of [['lUS', 'us'], ['lKR', 'kr'], ['lAT', 'att']]) $(id).classList.toggle('on', kk === k); tlGeom = null; };
+$('lUS').onclick = () => setLanes('us'); $('lKR').onclick = () => setLanes('kr'); $('lAT').onclick = () => setLanes('att');
 $('helpBtn').onclick = () => { $('help').hidden = false; };
 $('helpClose').onclick = () => { $('help').hidden = true; };
 $('help').onclick = (e) => { if (e.target === $('help')) $('help').hidden = true; };
@@ -466,6 +544,7 @@ function placeLabels() {
   for (const h of Object.values(hubs)) put(h.lab, scr(h.pos.x, h.pos.y + 4.5, h.pos.z));
   const pools = Object.values(S.nodes).filter((n) => n.p).sort((a, b) => (b.isPrice ? -1 : b.v ?? 0) - (a.isPrice ? -1 : a.v ?? 0));
   for (const n of pools) put(n.lab, n.mesh.visible && scr(n.x, n.mesh.position.y + n.r + 1.2, n.z));
+  for (const b of Object.values(beams)) put(b.lab, b.mesh.visible && scr(b.x, b.h + 1.5, b.z));
   for (const n of Object.values(S.nodes)) if (n.gl) put(n.gl, scr(n.x, 0, n.z), false);
 }
 
@@ -533,7 +612,12 @@ async function main() {
     f.per ||= /weekly/.test(f.note || '') ? 'w' : 'q';
     f.q = f.w.map((w, k) => { if (w == null) return null; if (f.per === 'q') return w * 13; let a = 0; for (let j = Math.max(0, k - 12); j <= k; j++) a += f.w[j] || 0; return a; });
   }
-  makeNodes(); makeFlows(); makeLinks();
+  try {
+    const ra = await fetch(`attention_${REGION}.json`, { cache: 'no-cache' });
+    if (ra.ok) S.A = await ra.json();
+  } catch (e) { S.A = null; }
+  if (!S.A) $('lAT').classList.add('off');
+  makeNodes(); makeBeams(); makeFlows(); makeLinks(); renderPairs();
   resize();
   S.T = 0; updatePlay();
   applyFrame(0); updateHud(0);

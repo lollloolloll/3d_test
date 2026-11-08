@@ -286,7 +286,7 @@ def main() -> int:
     log("fetching FRED …")
     F = {}
     for sid in ["DPSACBW027SBOG", "CPIAUCSL", "DFF", "DGS10", "BAA10Y", "DCOILWTICO", "WALCL", "RRPONTSYD", "M2SL",
-                "IRSTCI01KRM156N", "IRLTLT01KRM156N", "CPALTT01KRM659N"]:
+                "IRSTCI01KRM156N", "IRLTLT01KRM156N", "CPALTT01KRM659N", "RSAFS", "UMCSENT"]:
         try:
             F[sid] = fred(sid)
         except Exception as e:
@@ -406,6 +406,11 @@ def main() -> int:
     if "CPALTT01KRM659N" in F: lane("krcpi", "Korea inflation (CPI, y/y)", "%", to_weekly_last(F["CPALTT01KRM659N"], W, 70), "FRED/OECD CPALTT01KRM659N (ends 2023-11)", 2, "kr")
     lane("kospi", "KOSPI", "", px["kospi"], "Yahoo ^KS11", 0, "kr")
     lane("spxp", "S&P 500", "", px["spx"], "Yahoo ^GSPC", 0, "world")
+    # demand: what people actually spend and how they feel (shown next to attention)
+    if "RSAFS" in F:
+        rs = F["RSAFS"]; lane("retail", "US retail sales (y/y)", "%", to_weekly_last((rs / rs.shift(12) - 1) * 100, W, 70), "FRED RSAFS (monthly)", 1, "demand")
+    if "UMCSENT" in F:
+        lane("sent", "US consumer sentiment", "", to_weekly_last(F["UMCSENT"], W, 70), "FRED UMCSENT (U. of Michigan, monthly)", 1, "demand")
     lane("goldp", "Gold ($/oz)", "$", px["gold"], "Yahoo GC=F", 0, "world")
     lane("btcp", "Bitcoin ($)", "$", px["btc"], "Yahoo BTC-USD", 0, "world")
 
@@ -549,6 +554,17 @@ def build_korea(W, px, F, us_lanes, log) -> None:
     lane("kr10", "Korea 10-year yield (KTB)", "%", k10_w, "ECOS 721Y001 5050000 (monthly average)")
     cpi = ecos("901Y009", "M", "200501", ym, "0")
     lane("krcpi", "Korea inflation (CPI, y/y)", "%", to_weekly_last((cpi / cpi.shift(12) - 1) * 100, W, 70), "ECOS 901Y009 (monthly)")
+    # demand / mood (Korea)
+    for id, label, unit, fn, src, nd in [
+        ("ccsi", "Korea consumer sentiment (CCSI)", "", lambda: ecos("511Y002", "M", "200807", ym, "FME", "99988"), "ECOS 511Y002 (BoK survey, monthly; 100 = long-run average)", 1),
+        ("newsi", "Korea news sentiment (BoK)", "", lambda: ecos("523Y001", "M", "200501", ym, "A001"), "ECOS 523Y001 (BoK news sentiment index, experimental, monthly)", 1),
+        ("online", "Korea online shopping sales (y/y)", "%", lambda: (lambda x: (x / x.shift(12) - 1) * 100)(ecos("901Y098", "M", "200501", ym, "I74VA", "I74B")),
+         "ECOS 901Y098 internet shopping, constant prices (monthly)", 1)]:
+        try:
+            v = fn()
+            lanes.append({"id": id, "label": label, "unit": unit, "src": src, "group": "demand", "v": [r1(x, nd) for x in to_weekly_last(v, W, 70).values]})
+        except Exception as e:
+            log(f"  {id} failed: {e}")
 
     # ---- co-movement: KOSPI, a KTB ETF (bond prices), won, gold, S&P 500, bitcoin
     import yfinance as yf

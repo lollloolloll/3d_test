@@ -154,3 +154,16 @@ kbd { font: 500 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 
   #tl { height: 150px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* attention */
+.al { position: absolute; transform: translate(-50%, -100%); text-align: center; white-space: nowrap; padding: 2px 7px 3px; border-radius: 6px;
+  background: rgba(6, 8, 18, .55); border: 1px dashed color-mix(in srgb, var(--hue) 45%, transparent); pointer-events: none; }
+.al .k { font: 500 9.5px var(--sans); letter-spacing: .04em; color: color-mix(in srgb, var(--hue) 70%, white); }
+.al .v { font: 500 11px var(--mono); color: var(--ink2); }
+.al .v small { margin-left: 4px; font-size: 10px; }
+.g-beam { width: 6px; height: 14px; border-radius: 3px; background: linear-gradient(to top, rgba(180, 140, 255, .9), rgba(180, 140, 255, 0)); }
+#chapter .s { margin-top: 4px; font: 500 11.5px var(--sans); color: #ffd59c; }
+.cr .n .mute { font-size: 10.5px; }
+/* attention ↔ money: keyword on one line, the result under it */
+#llRows .cr { grid-template-columns: 1fr; gap: 1px; padding: 4px 0; }
+#llRows .cr .v { text-align: left; }

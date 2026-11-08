@@ -84,6 +84,26 @@ python tools/build_money.py      # also writes web/money/data_kr.json
 
 Without the key the Korea switch is dimmed and nothing Korean is estimated or invented.
 
+**Attention layer** (what people looked for, next to where money went):
+
+```bash
+python tools/build_attention.py  # after build_money.py -> web/money/attention_us.json, attention_kr.json (cached 7 days)
+```
+
+| on screen | source |
+|---|---|
+| glowing **pillar** behind each group | Google Trends web search interest (US / Korea), monthly since 2004, for that group's keywords (e.g. *stock market*, 주식, 부동산, 비트코인); height = the most-searched one, 0–100 relative, never dollars |
+| side panel *People's attention* | the most-searched topics that month (web + YouTube search via Google Trends, 2008-), world news share (GDELT, 2017-, US view), Wikipedia article views (2015-, real counts) |
+| side panel *Attention ↔ money* | correlation of search *surges* (month vs its own 12-month average) with a money measure (price return, rate change or net buying) at −3…+3 months; shown with its lag, or "no clear link" when \|r\| < 0.25 |
+| *Attention* timeline button | search lines per group plus demand: consumer sentiment and retail / online sales (FRED, ECOS) |
+| big-move card | the keyword whose search surge was most unusual that month |
+
+Google Trends is reached through `pytrends` (unofficial; requests are paced and cached). Keywords in different requests
+share one anchor keyword so they sit on one scale. X / Instagram / TikTok mention history and YouTube view history
+are not publicly available, so they are not used.
+
+![Attention layer: end of 2017, bitcoin searches at their peak next to the price](screenshots/money_map_attention.png)
+
 Keys: none needed. Space plays/pauses, ←/→ steps a week, Shift+←/→ jumps between big moves.
 
 ## Run it
