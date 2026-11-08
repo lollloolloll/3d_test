@@ -37,6 +37,34 @@ which market it is drawing: a market is an **adapter + a JSON config**.
 | ![Kidak market](screenshots/3d_kidak.png) | ![micro zoom on DeFi](screenshots/3d_crypto_micro.png) |
 | ![static GitHub Pages build](screenshots/3d_static_pages.png) | ![mobile 390×844](screenshots/3d_mobile.png) |
 
+## Money Map: 20 years of money flows
+
+`web/money/` (**Money map ↗** in the header) is a second view: where money **sits** and where it actually
+**moves**, week by week from November 2006 to now, played back like a video.
+
+![money map](screenshots/money_map.png)
+
+| on screen | data |
+|---|---|
+| **ball** (size = dollars held) | cash (bank deposits, money market funds), bonds (Treasuries, agency mortgage bonds, corporate bonds), real assets (US household real estate, world gold stock), stocks (all US-held equities), crypto (bitcoin, stablecoins). Left to right = safest to riskiest |
+| **stream** (cyan in, amber out, width = $ per quarter) | **measured** net purchases only: Fed Financial Accounts (Z.1) transactions by households, foreign investors and the Fed; stablecoin net minting (last 13 weeks). Nothing flows where nothing is measured |
+| **thin line** | 13-week correlation of weekly returns: blue = move together, orange = opposite; hidden when \|ρ\| < 0.4 |
+| **timeline** | stacked pool sizes over 20 years, plus driver lanes (inflation, Fed rate, 10-year yield, credit stress, oil, dollar; or the Korea set); dots = the 16 biggest 4-week moves |
+| **tooltip** | splits the last 12 months of a pool's change into *money in* (measured flows) and *price & other* |
+
+Sources: Federal Reserve Z.1 CSV package (levels and transactions, quarterly), FRED (CPI, rates, spreads, Fed
+balance sheet, M2, Korean rates/CPI), Yahoo Finance daily prices (weekly closes), DefiLlama stablecoin supply.
+Rules: weekly values between quarterly releases are interpolated and shown with **~**; after the latest Z.1 quarter
+the last value is held (stocks: scaled by the S&P 500) and also marked **~**; flows for unpublished quarters stay
+empty. Gold = price × WGC above-ground stock (back-cast by mine supply), bitcoin = price × supply from the halving
+schedule: both estimates. Korean pool sizes need a Bank of Korea ECOS key (not wired yet), so KOSPI shows as a price only.
+
+```bash
+python tools/build_money.py      # -> web/money/data.json (~0.4 MB, ~20 s; Z.1 zip cached for 7 days in data/)
+```
+
+Keys: none needed. Space plays/pauses, ←/→ steps a week, Shift+←/→ jumps between big moves.
+
 ## Run it
 
 ```bash
