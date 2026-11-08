@@ -44,6 +44,13 @@
   <div id="chgRows"></div>
   <h3 class="mt">Moving together <span>last 13 weeks</span></h3>
   <div id="tieRows"></div>
+  <div id="attSec">
+  <h3 class="mt">People's attention <span>this month</span></h3>
+  <div id="attRows"></div>
+  <div id="attMore"></div>
+  <h3 class="mt">Attention ↔ money <span>20 years</span></h3>
+  <div id="llRows"></div>
+  </div>
   <h3 class="mt">Drivers <span>this week</span></h3>
   <dl id="drv" class="kv"></dl>
 </section>
@@ -62,11 +69,12 @@
       <span class="lg"><span class="g-out"></span>Moved out</span>
       <span class="lg"><span class="g-tie"></span>Move together</span>
       <span class="lg"><span class="g-opp"></span>Move opposite</span>
+      <span class="lg"><span class="g-beam"></span>Pillar = search interest</span>
       <span class="lg"><span class="g-est">~</span>Estimate</span>
     </div>
     <div class="sp"></div>
     <div class="seg" role="group" aria-label="Drivers">
-      <button id="lUS" class="on">US drivers</button><button id="lKR">Korea</button>
+      <button id="lUS" class="on">US drivers</button><button id="lKR">Korea</button><button id="lAT">Attention</button>
     </div>
   </div>
   <canvas id="tl" aria-label="20-year timeline. Click or drag to jump."></canvas>
@@ -82,6 +90,7 @@
     <p><b>Streams</b> are money that actually moved, measured by the Federal Reserve's Financial Accounts (Z.1): net purchases by US households, foreign investors and the Fed. Cyan flows into a pool; amber flows out of it. Width = dollars per quarter. Stablecoin minting is measured weekly.</p>
     <p><b>Thin lines</b> show which prices moved together (blue) or opposite (orange) over the last 13 weeks. Moving together is not cause.</p>
     <p><b>The timeline</b> stacks every pool's size over 20 years; the lines under it are the drivers (inflation, rates, oil, dollar). Dots mark the biggest 4-week moves.</p>
+    <p><b>Attention</b>: the glowing pillar behind each group is how much people searched for it on Google that month (0–100, relative to the most-searched keyword; not dollars). The side panel adds YouTube searches, Wikipedia views and world news share; <i>Attention ↔ money</i> shows whether search surges moved together with prices or flows over 20 years, and how many months apart. The <i>Attention</i> timeline button swaps the driver lines for search interest, consumer sentiment and spending. X, Instagram and TikTok history is not publicly available, so it is not shown.</p>
     <p><b>Korea view</b> (top right): deposits, bonds, housing and listed stocks in won, from the Bank of Korea (ECOS). Streams are the BoK flow of funds (households, foreign investors, the BoK, new household loans) and KRX monthly net buying by individuals, foreigners and institutions; one group's net buying is another's net selling.</p>
     <p class="note">A ball grows either because its price rose or because money flowed in. The streams separate the two. Values between quarterly releases, the gold stock and the bitcoin supply are estimates and are marked so. Korean pool sizes need a Bank of Korea ECOS key.</p>
     <dl class="keys">
