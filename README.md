@@ -80,6 +80,8 @@ python tools/build_money.py      # also writes web/money/data_kr.json
 | Streams | 281Y001 transactions: households → deposits / bonds, new household loans, foreign → bonds, BoK → bonds (quarterly); 901Y055 KRX net buying by individuals, foreigners, institutions (monthly). KRX net buying nets to ~0 across groups: it shows *who* buys, not new money |
 | Drivers | BoK base rate (722Y001), KTB 10y (721Y001), CPI (901Y009), USD/KRW, KOSPI |
 
+![money map, Korea view](screenshots/money_map_kr.png)
+
 Without the key the Korea switch is dimmed and nothing Korean is estimated or invented.
 
 Keys: none needed. Space plays/pauses, ←/→ steps a week, Shift+←/→ jumps between big moves.
