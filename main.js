@@ -753,8 +753,8 @@ function phaseToasts() {
   for (const s of S.sectors) {
     const x = S.secState[s.id]; if (!x) continue;
     const was = S.phaseSeen[s.id];
-    if (x.phase && !was) toast(`${s.label} · phase-lock  |M| ${Math.abs(x.M ?? 0).toFixed(2)} · B ×${(x.b ?? 0).toFixed(1)}`, '#fff');
-    else if (!x.phase && was) toast(`${s.label} · phase-lock released`, 'var(--ink3)');
+    if (x.phase && !was) toast(`${s.label} — whole sector moving ${(x.M ?? 0) >= 0 ? 'up' : 'down'} together`, '#fff');
+    else if (!x.phase && was) toast(`${s.label} — no longer moving together`, 'var(--ink3)');
     S.phaseSeen[s.id] = !!x.phase;
   }
 }
@@ -951,9 +951,9 @@ function updateChrome() {
   $('tagline').textContent = M.title;
   $('note').textContent = M.note || '';
   const L = M.labels || {};
-  $('lgSize').textContent = `size = ${RP.on ? (RP.data?.energy === 'count' ? 'samples in window' : 'volume in window') : (L.energy || 'energy')} · colour = Δ · flare = burst`;
-  $('lgEdge').textContent = (L.edges || 'correlation') + (RP.on ? ' · live edges, not replayed' : API.static ? ' · as recorded' : '');
-  $('bRef').textContent = 'Δ ' + (L.delta_ref || 'ref'); $('bWin').textContent = 'Δ ' + (L.delta_win || 'window');
+  $('lgSize').textContent = `size = ${RP.on ? (RP.data?.energy === 'count' ? 'activity' : 'volume') : (L.energy || 'volume')} · colour = change · flash = new data`;
+  $('lgEdge').textContent = 'lines join assets that move together' + (RP.on ? ' (latest links)' : '');
+  $('bRef').textContent = L.delta_ref || 'change'; $('bWin').textContent = L.delta_win || 'short-term change';
   $('bRef').title = $('bRef').textContent; $('bWin').title = $('bWin').textContent;
   for (const el of document.querySelectorAll('.layer')) el.title = el.querySelector('small').textContent;
   $('bRef').classList.toggle('on', S.deltaMode !== 'win'); $('bWin').classList.toggle('on', S.deltaMode === 'win');
@@ -1047,8 +1047,8 @@ function updateBigTime() {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   $('btT').textContent = fmtDate(RP.T, RP.data.grain === '1m').replace(' ', '  ');
   $('btR').textContent = `Replay · ${SPTXT[RP.speed] || RP.speed + ' s/s'}${RP.playing ? '' : ' · paused'}`;
-  const W = { '1m': 'T−1h', '1h': 'T−24h', '1d': 'T−7d' }[RP.data.grain];
-  $('btN').textContent = `${tz} · stored ${RP.data.grain} buckets of ${RP.data.source} · colour = Δ vs ${W} · size = ${RP.data.energy === 'count' ? 'samples' : 'volume'} in window · flows = ${API.static ? 'recorded' : 'live'} edges`;
+  const W = { '1m': '1 hour before', '1h': '24 hours before', '1d': '7 days before' }[RP.data.grain];
+  $('btN').textContent = `${tz} · recorded history · colour = change vs ${W} · size = ${RP.data.energy === 'count' ? 'activity' : 'volume'} in that window`;
 }
 function updateClock() {
   if (!S.meta) return;
@@ -1075,10 +1075,9 @@ function updateVitals() {
   const out = [];
   for (const { s, i, st: x } of rows) {
     const d = secDelta(x), col = rgb(colorFor(d, [0, 0, 0])), hue = HUES[i % HUES.length];
-    const cov = x.cov && x.cov[1] > (x.N ?? 0) ? ` · src ${x.cov[0]}/${x.cov[1]}` : '';
     out.push(`<div class="vrow${hovSec === i ? ' hl' : ''}" role="listitem" data-s="${s.id}" data-i="${i}"><span class="sw" style="background:${hue};box-shadow:0 0 8px ${hue}"></span>
-      <div class="nm">${esc(s.label)}${x.phase ? '<span class="tag">LOCK</span>' : ''}<small>${x.n ?? 0}/${x.N ?? s.members.length} live${cov}</small></div>
-      <div class="d" style="color:${col}">${fmtDelta(d, deltaKind(S.ents[S.idx.get(s.members[0])]))}<small>${x.b == null ? '—' : '×' + x.b.toFixed(2)}</small></div>
+      <div class="nm">${esc(s.label)}${x.phase ? '<span class="tag">IN SYNC</span>' : ''}<small>${nAssets(x.N ?? s.members.length)}${(x.n ?? 0) < (x.N ?? s.members.length) ? ((x.n ?? 0) === 0 ? ' · no data yet' : ` · ${x.n} with data`) : ''}</small></div>
+      <div class="d" style="color:${col}">${fmtDelta(d, deltaKind(S.ents[S.idx.get(s.members[0])]))}<small class="${actCls(x.b)}">${actShort(x.b)}</small></div>
       ${sparkSvg(S.spark?.out?.[s.id], hue)}</div>`);
   }
   const html = out.join('');
@@ -1089,8 +1088,13 @@ function updateVitals() {
       el.onmouseenter = () => { hovSecList = +el.dataset.i; }; el.onmouseleave = () => { hovSecList = null; };
     }
   }
-  $('vhint').textContent = S.spark ? `${S.spark.g} spark · ${fmtDate(S.spark.from).slice(5, 10)} → ${fmtDate(S.spark.to).slice(5, 10)}` : `${S.sectors.length} handles`;
+  $('vhint').textContent = S.spark ? `trend ${fmtDate(S.spark.from).slice(5, 10)} → ${fmtDate(S.spark.to).slice(5, 10)}` : `${S.sectors.length}`;
 }
+// "activity" = how busy it is vs its own usual level (burst score), in plain words
+const actTxt = (b) => (b == null ? '—' : b >= 1.5 ? `busy ×${b.toFixed(1)}` : b <= 0.6 ? `quiet ×${b.toFixed(1)}` : `normal ×${b.toFixed(1)}`);
+const actShort = (b) => (b == null ? '' : b >= 1.5 ? `busy ×${b.toFixed(1)}` : b <= 0.6 ? 'quiet' : '');
+const nAssets = (n) => `${n} asset${n === 1 ? '' : 's'}`;
+const actCls = (b) => (b == null ? '' : b >= 1.5 ? 'hot' : b <= 0.6 ? 'cold' : '');
 function marketAgg() {
   let wr = 0, Er = 0, bs = 0, nb = 0, Et = 0, su = 0, nu = 0;
   S.sectors.forEach((s) => { const x = secSt(s.id); Et += x.e || 0; const d = secDelta(x); if (d != null) { su += d; nu++; if (x.e) { wr += x.e * d; Er += x.e; } } if (x.b != null) { bs += x.b; nb++; } });
@@ -1104,20 +1108,24 @@ function updateManifold() {
   const A = marketAgg(); S.agg = A;
   const secs = S.sectors.map((s) => secSt(s.id));
   const live = S.ents.filter((e) => !st(e).m).length;
-  const rhos = S.edges.map((x) => Math.abs(x[2])), mr = rhos.length ? rhos.reduce((a, b) => a + b, 0) / rhos.length : null;
-  const kind = deltaKind(S.ents[0]);
+  const kind = deltaKind(S.ents[0]), c = COL[S.conv], tmp3 = [0, 0, 0];
+  const up = A.ds.filter((d) => d > 0).length, dn = A.ds.filter((d) => d < 0).length;
+  const ranked = S.sectors.map((s, i) => ({ s, d: secDelta(secs[i]) })).filter((x) => x.d != null).sort((a, b) => b.d - a.d);
+  const secCell = (x) => (x ? `<span class="sn" title="${esc(x.s.label)}">${esc(x.s.label)}</span> <span style="color:${rgb(colorFor(x.d, tmp3))}">${fmtDelta(x.d, kind)}</span>` : '—');
+  const L = S.meta.labels || {};
   const rows = [
-    ['g', 'Handles · sectors', `${S.sectors.length}`],
-    ['n', 'Cells live', `${live} / ${S.ents.length}`],
-    ['ρ', 'Flows · ⟨|ρ|⟩', `${S.edges.length} · ${mr == null ? '—' : mr.toFixed(2)}`],
-    ['B', RP.on ? 'Market volume ratio' : 'Market burst', A.b == null ? '—' : `×${A.b.toFixed(2)}`],
-    ['M', 'Phase-locked', `${secs.filter((x) => x.phase).length} / ${S.sectors.length}`],
-    ['σ', 'Δ dispersion', A.sd == null ? '—' : fmtDelta(A.sd, kind).replace('+', '')],
-    ['E', 'Total energy', fmtNum(A.E)],
+    ['Market change', A.d == null ? '—' : `<span style="color:${rgb(colorFor(A.d, tmp3))}">${fmtDelta(A.d, kind)}</span>`],
+    ['Rising / falling', `<span style="color:${rgb(c.up)}">▲ ${up}</span>&nbsp; <span style="color:${rgb(c.dn)}">▼ ${dn}</span>`],
+    ['Best sector', secCell(ranked[0])],
+    ['Worst sector', secCell(ranked.length > 1 ? ranked[ranked.length - 1] : null)],
+    ['Activity', `<span class="${actCls(A.b)}">${actTxt(A.b)}</span>`],
+    ['Sectors in sync', `${secs.filter((x) => x.phase).length} / ${S.sectors.length}`],
+    [/rating/i.test(L.energy || '') ? 'Total ratings' : 'Total volume', fmtNum(A.E)],
   ];
-  const html = rows.map(([s, k, v]) => `<dt><i>${s}</i>${k}</dt><dd>${v}</dd>`).join('');
+  if (live < S.ents.length) rows.push(['With data', `${live} / ${S.ents.length}`]);
+  const html = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
   if ($('mstats')._h !== html) { $('mstats').innerHTML = html; $('mstats')._h = html; }
-  $('mhint').textContent = RP.on ? 'replay values' : API.static ? 'recorded values' : 'live values';
+  $('mhint').textContent = RP.on ? 'replay' : API.static ? 'recorded' : 'live';
   // Δ histogram
   const NB = 28, lim = clip(), bins = new Array(NB).fill(0);
   for (const d of A.ds) bins[clamp(Math.floor((d / lim + 1) / 2 * NB), 0, NB - 1)]++;
@@ -1126,19 +1134,19 @@ function updateManifold() {
   if ($('hist')._h !== hh) { $('hist').innerHTML = hh; $('hist')._h = hh; }
   $('histRange').textContent = `${fmtDelta(-lim, kind)} … ${fmtDelta(lim, kind)}`;
 }
-function updateModel() {
+function updateModel() {           // "how to read" strip: plain words, no formulas
   if (!S.meta) return;
-  const E = S.meta.engine || {}, hk = E.hawkes || {}, ph = E.phase || {};
-  const tS = cadTxt(hk.tau_short_s || 0), tL = cadTxt(hk.tau_long_s || 0);
-  $('eqMain').innerHTML = `B<sub>i</sub> = λ<sub>i</sub><sup>(${tS})</sup> ⁄ λ<sub>i</sub><sup>(${tL})</sup> <span class="up">,</span>&nbsp; λ(t) = μ + α Σ<sub>k</sub> e<sup>−(t−t<sub>k</sub>)/τ</sup>`;
-  const secs = S.sectors.map((s) => secSt(s.id));
-  const Ms = secs.map((x) => x.M).filter((m) => m != null), mM = Ms.length ? Ms.reduce((a, b) => (Math.abs(b) > Math.abs(a) ? b : a), 0) : null;
-  const mode = E.edge_mode === 'residual' ? 'ε' : 'r';
-  $('eqs').innerHTML = [
-    `ρ<sub>ij</sub> = corr(${mode}<sub>i</sub>, ${mode}<sub>j</sub>) · <b>${S.edges.length}</b> flows`,
-    `M = ⟨sgn Δ⟩ · max |M| <b>${mM == null ? '—' : Math.abs(mM).toFixed(2)}</b>`,
-    `lock: |M| ≥ ${ph.M_on ?? '—'} ∧ B ≥ ${ph.B_on ?? '—'} · <b>${secs.filter((x) => x.phase).length}</b>`,
-  ].map((s) => `<span>${s}</span>`).join('');
+  const c = COL[S.conv], L = S.meta.labels || {};
+  const what = /rating/i.test(L.energy || '') ? 'ratings' : 'trading';
+  const items = [
+    `<span class="g-ring"></span>Bigger ring = more ${what}`,
+    `<span class="g-dot" style="background:${rgb(c.up)}"></span>rising&nbsp;&nbsp;<span class="g-dot" style="background:${rgb(c.dn)}"></span>falling`,
+    `<span class="g-glow"></span>Glow = busier than usual`,
+    `<span class="g-line"></span>Line = move together`,
+    `<span class="g-white"></span>White = whole sector one way`,
+  ];
+  const html = items.map((s) => `<span>${s}</span>`).join('');
+  if ($('guide')._h !== html) { $('guide').innerHTML = html; $('guide')._h = html; }
 }
 
 // ------------------------------------------------------------------ toasts
@@ -1165,7 +1173,7 @@ function buildLabels() {
   });
   entLabels = [];
   for (let i = 0; i < Math.min(S.ents.length, 80); i++) { const d = document.createElement('div'); d.className = 'lab'; d.style.display = 'none'; root.appendChild(d); entLabels.push(d); }
-  $('axis').innerHTML = ['+2σ', '+σ', '0', '−σ', '−2σ'].map((t, k) => `<div class="tk${k === 2 ? ' z' : ''}">${t}</div>`).join('') + '<div class="ax">Δ̄ ⁄ σ</div>';
+  $('axis').innerHTML = '';
   axisTicks = [...$('axis').children];
 }
 
@@ -1232,32 +1240,34 @@ function tipHtml(h) {
     if (s.m) return `${head}<div class="miss">Empty — ${esc(s.m)}</div>${srcs}`;
     const rows = [];
     rows.push([L.value || 'value', fmtNum(s.v) + (s.held ? ' (held: gap)' : '')]);
-    rows.push([RP.on ? 'volume in window' : (L.energy || 'energy'), fmtNum(s.e)]);
-    if (RP.on) rows.push([`Δ vs ${{ '1m': 'T−1h', '1h': 'T−24h', '1d': 'T−7d' }[RP.data.grain]}`, fmtDelta(s.dr, deltaKind(e))]);
+    rows.push([RP.on ? 'volume in window' : (L.energy || 'volume'), fmtNum(s.e)]);
+    if (RP.on) rows.push([`change vs ${{ '1m': '1h before', '1h': '24h before', '1d': '7d before' }[RP.data.grain]}`, fmtDelta(s.dr, deltaKind(e))]);
     else {
-      rows.push([L.delta_ref || 'Δ ref', fmtDelta(s.dr, e.meta?.delta_kind || L.delta_kind)]);
-      rows.push([L.delta_win || 'Δ window', fmtDelta(s.dw, L.delta_win_kind || L.delta_kind) + (s.dwp ? ' (partial)' : '')]);
+      rows.push([L.delta_ref || 'change', fmtDelta(s.dr, e.meta?.delta_kind || L.delta_kind)]);
+      rows.push([L.delta_win || 'short-term change', fmtDelta(s.dw, L.delta_win_kind || L.delta_kind) + (s.dwp ? ' (partial)' : '')]);
     }
-    rows.push([RP.on ? 'burst (volume ratio)' : 'burst (Hawkes)', s.b == null ? '— (no events yet)' : `×${s.b.toFixed(2)}${RP.on ? '' : ` · ${fmtNum(s.x)}/s`}`]);
-    rows.push([RP.on ? 'stored sample' : 'source time', (s.ts ? fmtDate(s.ts, true) : '—') + (e.stale ? ` <span class="t-stale">stale — ${ago(S.dataTs - s.ts)} behind</span>` : '')]);
+    rows.push(['activity vs usual', `<span class="${actCls(s.b)}">${actTxt(s.b)}</span>`]);
+    rows.push([RP.on ? 'recorded at' : 'updated', (s.ts ? fmtDate(s.ts, true) : '—') + (e.stale ? ` <span class="t-stale">stale — ${ago(S.dataTs - s.ts)} behind</span>` : '')]);
     if (!RP.on) {
       const nb = S.edges.filter((x) => x[0] === e.id || x[1] === e.id).sort((a, b) => Math.abs(b[2]) - Math.abs(a[2])).slice(0, 4)
-        .map((x) => `${esc(S.ents[S.idx.get(x[0] === e.id ? x[1] : x[0])]?.label)} <span style="color:${x[2] >= 0 ? '#7fe8ff' : '#ffb366'}">${x[2] >= 0 ? '+' : '−'}${Math.abs(x[2]).toFixed(2)}</span>`);
-      rows.push(['flows ρ', nb.length ? nb.join('<br>') : '—']);
+        .map((x) => `${esc(S.ents[S.idx.get(x[0] === e.id ? x[1] : x[0])]?.label)} <span style="color:${x[2] >= 0 ? '#7fe8ff' : '#ffb366'}">${x[2] >= 0 ? 'same way' : 'opposite'}</span>`);
+      rows.push(['moves with', nb.length ? nb.join('<br>') : '—']);
       for (const [k, v] of Object.entries(s.xt || {})) if (v != null && v !== '') rows.push([k, esc(typeof v === 'number' ? fmtNum(v) : v)]);
     }
     return `${head}<table>${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</table>${srcs}`;
   }
   const sec = S.sectors[h.i], x = secSt(sec.id), kind = deltaKind(S.ents[S.idx.get(sec.members[0])]);
-  const links = S.sedges.filter((y) => y[0] === sec.id || y[1] === sec.id).map((y) => `${esc(S.sectors[S.sidx.get(y[0] === sec.id ? y[1] : y[0])]?.label)} ${y[2] >= 0 ? '+' : '−'}${Math.abs(y[2]).toFixed(2)}`);
+  const links = S.sedges.filter((y) => y[0] === sec.id || y[1] === sec.id).map((y) => `${esc(S.sectors[S.sidx.get(y[0] === sec.id ? y[1] : y[0])]?.label)} <span style="color:${y[2] >= 0 ? '#7fe8ff' : '#ffb366'}">${y[2] >= 0 ? 'same way' : 'opposite'}</span>`);
+  const upN = sec.members.filter((id) => { const en = S.ents[S.idx.get(id)]; if (!en) return false; const s = st(en); return !s.m && deltaOf(s) > 0; }).length;
   const rows = [
-    ['members live', `${x.n ?? 0} / ${x.N ?? sec.members.length}`],
-    ['source coverage', x.cov ? `${x.cov[0]} / ${x.cov[1]} entity·sources` : '—'],
-    [L.energy || 'energy', fmtNum(x.e)], ['Δ (energy-weighted)', fmtDelta(secDelta(x), kind)],
-    ['magnetisation M', x.M == null ? '—' : x.M.toFixed(2)], ['sector burst', x.b == null ? '—' : '×' + x.b.toFixed(2)],
-    ['phase-lock', x.phase ? 'yes — |M| and burst over threshold' : 'no'], ['sector flows', links.length ? links.join('<br>') : '—'],
+    ['change', fmtDelta(secDelta(x), kind)],
+    ['assets rising', `${upN} of ${x.N ?? sec.members.length}`],
+    [L.energy || 'volume', fmtNum(x.e)],
+    ['activity vs usual', `<span class="${actCls(x.b)}">${actTxt(x.b)}</span>`],
+    ['moving together', x.phase ? `yes — almost all ${(x.M ?? 0) >= 0 ? 'up' : 'down'}, and busy` : 'no'],
+    ['moves with', links.length ? links.join('<br>') : '—'],
   ];
-  return `<h4>${esc(sec.label)}</h4><div class="sub">Handle · click to fly in</div><table>${rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>`;
+  return `<h4>${esc(sec.label)}</h4><div class="sub">Sector · click to zoom in</div><table>${rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>`;
 }
 function srcRows(e) {
   if (RP.on) return `<div class="srcs sub">replay source: ${esc(RP.data?.source)} only</div>`;
@@ -1425,7 +1435,7 @@ function fitPanels() {
 function scr(v) { proj.copy(v).project(cam); return proj.z < 1 ? [(proj.x + 1) / 2 * innerWidth, (1 - proj.y) / 2 * innerHeight] : null; }
 function placeLabels() {
   const L = S.L, dist = cam.position.distanceTo(controls.target), lodU = dist / fitDist;
-  $('lod').textContent = lodU > 0.8 ? 'MACRO · HANDLES' : lodU < 0.45 ? 'MICRO · CELLS' : 'MESO';
+  $('lod').textContent = lodU > 0.8 ? 'OVERVIEW' : lodU < 0.45 ? 'DETAIL · SINGLE ASSETS' : 'SECTORS';
   const c0 = scr(tmpV.set(0, 0, 0)) || [innerWidth / 2, innerHeight / 2];
   const tmp = [0, 0, 0], show = manGroup.visible, secRects = [];
   S.sectors.forEach((sec, s) => {
@@ -1444,7 +1454,8 @@ function placeLabels() {
     el.style.display = 'block';
     el.className = 'slab ' + (right ? 'right' : 'left');
     const d = secDelta(x), kind = deltaKind(S.ents[S.idx.get(sec.members[0])]);
-    const html = `<div class="k">${esc(sec.label)}${x.phase ? '<span class="ph">LOCK</span>' : ''}</div><div class="v"><span style="color:${rgb(colorFor(d, [0, 0, 0]))}">${fmtDelta(d, kind)}</span> <span class="m">·</span> ×${x.b == null ? '—' : x.b.toFixed(1)} <span class="m">· ${x.n ?? 0}/${x.N ?? sec.members.length}</span></div>`;
+    const busy = x.b != null && x.b >= 1.5 ? ` <span class="m">·</span> <span class="hot">busy ×${x.b.toFixed(1)}</span>` : '';
+    const html = `<div class="k">${esc(sec.label)}${x.phase ? '<span class="ph">IN SYNC</span>' : ''}</div><div class="v"><span style="color:${rgb(colorFor(d, [0, 0, 0]))}">${fmtDelta(d, kind)}</span>${busy}</div>`;
     if (el._h !== html) { el.innerHTML = html; el._h = html; }
     const w = el.offsetWidth, hgt = el.offsetHeight || 32;
     let left = right ? lx + 6 : lx - 6 - w, top = ey - 9;
@@ -1464,7 +1475,7 @@ function placeLabels() {
   if (cp && S.market_core) {
     const mc = S.market_core, kind = deltaKind(S.ents[0]);
     cl.style.display = 'block'; cl.style.left = cp[0] + 'px'; cl.style.top = (cp[1] + 14) + 'px';
-    const html = `<div class="k">MARKET CORE</div><div class="m">Δ̄ = <span style="color:${rgb(coreColor(mc.d, [0, 0, 0]))};font-style:normal">${fmtDelta(mc.d, kind)}</span></div><div class="v">${RP.on ? 'volume ratio' : 'burst'} ${mc.b == null ? '—' : '×' + mc.b.toFixed(2)} · E ${fmtNum(mc.E)}</div>`;
+    const html = `<div class="k">WHOLE MARKET</div><div class="m" style="color:${rgb(coreColor(mc.d, [0, 0, 0]))}">${fmtDelta(mc.d, kind)}</div><div class="v">${actTxt(mc.b)}</div>`;
     if (cl._h !== html) { cl.innerHTML = html; cl._h = html; }
   } else cl.style.display = 'none';
   const axOn = core.visible && lodU > 0.45;
