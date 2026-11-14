@@ -37,6 +37,30 @@ which market it is drawing: a market is an **adapter + a JSON config**.
 | ![Kidak market](screenshots/3d_kidak.png) | ![micro zoom on DeFi](screenshots/3d_crypto_micro.png) |
 | ![static GitHub Pages build](screenshots/3d_static_pages.png) | ![mobile 390×844](screenshots/3d_mobile.png) |
 
+## Mind & Money (`web/mm/`)
+
+One screen for the whole picture: **what people cared about** (top), **who moved money** (middle) and **where money
+sits** (bottom), over 20 years, playable like a video. Open `web/mm/` (US) or `web/mm/?r=kr` (Korea).
+
+![Mind & Money, March 2020](screenshots/mind_money.png)
+
+| on screen | meaning | source |
+|---|---|---|
+| three sentences at the top | written from that month's numbers: the topic most above usual, the largest money move, the largest price change | all of the below |
+| topic bar (left column; small circles on a phone) | one topic people search for, in five families: Fear, Investing, Play, Daily life, Future. Right of the centre line (or bigger than its faint disc) = attention shifted toward it | Google Trends categories + keywords, vs the topic's own previous 36 months, minus the change common to all topics |
+| chips under the top row | most-read Wikipedia articles that month (evergreen pages removed), typed by Wikidata | Wikimedia top lists (2015-07-), Wikidata |
+| pill (middle row) | a group whose net buying is officially measured | Fed Z.1 / BoK flow of funds / KRX |
+| stream | money that moved this quarter; width ∝ amount, one dot = $10B (US) or ₩1조 (Korea); blue into a pool, orange out | same |
+| dotted thread | a search topic and a pool that moved together over 20 years (\|r\| ≥ 0.25); lit while the topic is hot | `build_attention.py` |
+| dashed ring on a pool | its size one year ago | same |
+| circle (bottom row) | a pool of money; area = amount held | Fed Z.1, FRED, ECOS, Yahoo, DefiLlama |
+| timeline rows | when a topic in each family was unusually high for that topic; stacked money below | same |
+| *Findings* | correlations between attention and money at -3..+3 months, weak ones marked as "no clear link" | `build_attention.py`, `build_mood.py` |
+
+Data: `python tools/build_money.py`, then `python tools/build_attention.py`, then `python tools/build_mood.py`
+(all cached; Google Trends is reached through `pytrends`, an unofficial client, so requests are paced).
+The "Investing" family is not called "Greed" on purpose: searches for stocks and coins spike in manias and in crashes alike.
+
 ## Money Map: 20 years of money flows
 
 `web/money/` (**Money map ↗** in the header) is a second view: where money **sits** and where it actually
