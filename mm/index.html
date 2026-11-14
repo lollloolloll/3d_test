@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#05060d">
+<meta name="description" content="Mind &amp; Money: 20 years of what people cared about and where the money actually went, from public data.">
+<title>Mind &amp; Money</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='9' r='6' fill='none' stroke='%23d08bff' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='24' r='6' fill='%235ee4ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="mm.css?v=13">
+</head>
+<body class="booting">
+<canvas id="stage" aria-label="Mind and money map"></canvas>
+
+<header id="top">
+  <div class="brand"><b>MIND &amp; MONEY</b><span id="sub">what people cared about · where the money went</span></div>
+  <nav>
+    <div class="seg" role="group" aria-label="Country"><a id="rUS" href="./">US</a><a id="rKR" href="./?r=kr">Korea</a></div>
+    <button id="findBtn" class="btn">Findings</button>
+    <a class="btn ghost" href="../" title="One small corner of this world: the Kidak market (AI keyboard apps)">Kidak market ↗</a>
+    <button id="helpBtn" class="btn icon" aria-label="How to read">?</button>
+  </nav>
+</header>
+
+<div id="now"><div id="date">—</div><div id="week">—</div></div>
+<div id="story" aria-live="off">
+  <p><b class="tag t-mind">MIND</b><span id="sMind">—</span></p>
+  <p><b class="tag t-money">MONEY</b><span id="sMoney">—</span></p>
+  <p><b class="tag t-price">PRICES</b><span id="sPrice">—</span></p>
+  <p id="pWiki"><b class="tag t-wiki">READ</b><span id="sWiki">—</span></p>
+</div>
+<div id="wiki" hidden></div>
+<aside id="mind" class="panel" aria-label="What people search for, compared with their usual"></aside>
+
+<section id="dock" class="panel" aria-label="Timeline">
+  <div class="ctl">
+    <button class="btn icon" id="bPlay" aria-label="Play or pause"><svg viewBox="0 0 16 16"><path id="playIco" d="M5 3.5v9l7-4.5z"/></svg></button>
+    <div class="seg" role="group" aria-label="Speed">
+      <button data-sp="4.345">1 month/s</button><button data-sp="13">1 quarter/s</button><button data-sp="52">1 year/s</button>
+    </div>
+    <button class="btn" id="bPrev" title="Previous big move (Shift+←)">◀ big move</button>
+    <button class="btn" id="bNext" title="Next big move (Shift+→)">big move ▶</button>
+    <div id="why" aria-label="Why: rates, prices, mood of consumers"></div>
+  </div>
+  <canvas id="tl" aria-label="20-year timeline. Click or drag to jump."></canvas>
+</section>
+
+<div id="tip" role="tooltip"></div>
+
+<div id="find" class="sheet" hidden>
+  <div class="card panel" role="dialog" aria-label="Findings">
+    <h3>Does attention move with money? <button class="btn icon" data-close aria-label="Close">✕</button></h3>
+    <p class="lead">20 years of monthly data. “Together” = they rose and fell in the same months; the lag says which moved first. This is correlation, not cause.</p>
+    <div id="findRows"></div>
+    <p class="note" id="findNote"></p>
+  </div>
+</div>
+
+<div id="help" class="sheet" hidden>
+  <div class="card panel" role="dialog" aria-label="How to read">
+    <h3>How to read <button class="btn icon" data-close aria-label="Close">✕</button></h3>
+    <p><b>MIND</b> (left column on a wide screen, top row on a phone). Each line or small circle is one topic people search for, grouped in five families: <i>Fear</i> (job searches, recession, layoffs, exchange rate), <i>Investing</i> (investing, stocks, coins; it rises in manias and in crashes alike), <i>Play</i> (comics &amp; animation, games, movies, music, TV, concerts, travel, humor), <i>Daily life</i> (food, shopping, housing, health), <i>Future</i> (education, programming, immigration). A bar to the right of the centre line (or a circle bigger than its faint disc) means attention shifted toward that topic: more searches than <b>its own usual</b> (the previous three years), after removing the rise or fall common to all topics. It is never a head count.</p>
+    <p><b>Middle row · WHO.</b> The groups whose buying and selling is officially measured: households, foreign investors, the central bank (and institutions in Korea).</p>
+    <p><b>Bottom row · MONEY.</b> Each circle is a pool of money; its area is the amount held there. From safest (left) to riskiest (right).</p>
+    <p><b>Streams</b> are money that actually moved this quarter. The wider the stream, the more money; one dot is a fixed amount (<span id="hUnit"></span>). Blue flows into a pool, orange flows out. No stream = nothing measured, or not published yet. The dashed ring on a pool is its size one year ago.</p>
+    <p><b>Dotted thread</b> from a topic to a pool: over 20 years, searches for that topic and that pool's price or buying moved together (or against each other). It lights up while the topic is hot. It is a correlation, not a cause; the full list is under <i>Findings</i>.</p>
+    <p><b>Playing</b> slows down for a moment at each big move (white dots on the timeline) so you can read it.</p>
+    <p><b>The three sentences</b> at the top are written from the numbers of that month: the strongest mood, the largest money move, and the largest price change.</p>
+    <p><b>Most read on Wikipedia</b> (from mid-2015): that month's top articles, with pages that are always popular removed. The type (TV series, game, actor, meme …) comes from Wikidata.</p>
+    <p class="note">Sources: Federal Reserve Financial Accounts (Z.1), FRED, Bank of Korea ECOS, KRX, Yahoo Finance, DefiLlama, Google Trends (search categories and keywords, relative values), Wikipedia page views, Wikidata. Amounts marked ~ are estimates between quarterly releases. X, Instagram and TikTok history is not public, so it is not used. Very small pools are drawn slightly larger than scale so they stay visible.</p>
+    <dl class="keys">
+      <dt><kbd>Space</kbd></dt><dd>Play / pause</dd>
+      <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>One week</dd>
+      <dt><kbd>Shift</kbd>+<kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous / next big move</dd>
+    </dl>
+  </div>
+</div>
+
+<div id="loader"><b>MIND &amp; MONEY</b><span id="ldStep">Loading 20 years of data</span></div>
+<script type="module" src="mm.js?v=13"></script>
+</body>
+</html>
